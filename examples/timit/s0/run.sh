@@ -6,8 +6,8 @@
 # Use this to control how many gpu you use, It's 1-gpu training if you specify
 # just 1gpu, otherwise it's is multiple gpu training based on DDP in pytorch
 export CUDA_VISIBLE_DEVICES="0"
-stage=0     # start from 0 if you need to start from data preparation
-stop_stage=4
+stage=5     # start from 0 if you need to start from data preparation
+stop_stage=6
 
 # You should change the following two parameters for multiple machine training,
 # see https://pytorch.org/docs/stable/elastic/run.html
@@ -16,17 +16,17 @@ num_nodes=1
 job_id=2023
 
 # data
-timit_data=/home/Liangcd/data/timit
+timit_data=/idiap/resource/database/timit/timit
 # path to save preproecssed data
-# export data=data
-
+export data=/idiap/temp/lcoppieters/tmp_timit/wenet
+export TMPDIR=/idiap/temp/lcoppieters/tmp_timit/wenet
 
 nj=16
 
 # data_type can be `raw` or `shard`. Typically, raw is used for small dataset,
 # `shard` is used for large dataset which is over 1k hours, and `shard` is
 # faster on reading data and training.
-data_type=raw
+data_type=shard #originally: raw, changed to shard
 num_utts_per_shard=1000
 
 train_set=train
@@ -38,13 +38,18 @@ train_set=train
 # 5. conf/train_conformer_no_pos.yaml: Conformer without relative positional encoding
 # 6. conf/train_u2++_conformer.yaml: U2++ conformer
 # 7. conf/train_u2++_transformer.yaml: U2++ transformer
-train_config=conf/train_transformer.yaml
-dir=exp/transformer_phn_5k_acc4_bs16
+PWD=/idiap/user/lcoppieters/TL/wenet/examples/timit/s0
+train_config=${PWD}/conf/train_transformer.yaml
+dir=/idiap/temp/lcoppieters/tmp_wenet/exp_timit/transformer_phn_5k_acc4_bs16
+# dir=exp/transformer_phn_5k_acc4_bs16
+# checkpoint=/idiap/user/lcoppieters/TL/wenet/examples/timit/s0/exp/transformer_phn_5k_acc4_bs16/epoch_11.pt
 checkpoint=
 
-
 # use average_checkpoint will get better result
-average_checkpoint=true
+# average_checkpoint=true
+average_checkpoint=false
+
+# decode_checkpoint=$dir/final.pt torch.load doesn't recognize linking
 decode_checkpoint=$dir/final.pt
 average_num=20
 decode_modes="ctc_greedy_search ctc_prefix_beam_search attention attention_rescoring"
@@ -55,7 +60,7 @@ dict=data/dict/${trans_type}_units.txt
 
 train_engine=torch_ddp
 
-deepspeed_config=../aishell/s0/conf/ds_stage2.json
+deepspeed_config=../../aishell/s0/conf/ds_stage2.json
 deepspeed_save_states="model_only"
 
 . tools/parse_options.sh || exit 1;
@@ -72,13 +77,11 @@ fi
 if [ ${stage} -le 1 ] && [ ${stop_stage} -ge 1 ]; then
     echo "stage 1: compute global cmvn"
     # compute cmvn
-    tools/compute_cmvn_stats.py --num_workers 16 --train_config $train_config \
-        --in_scp data/${train_set}/wav.scp \
-        --out_cmvn data/${train_set}/global_cmvn
+    tools/compute_cmvn_stats.py --num_workers 1 --train_config $train_config \
+        --in_scp ${PWD}/data/${train_set}/wav.scp \
+        --out_cmvn ${PWD}/data/${train_set}/global_cmvn
     echo "Finish stage 1"
 fi
-
-
 
 if [ ${stage} -le 2 ] && [ ${stop_stage} -ge 2 ]; then
     echo "stage 2: make train dict"
@@ -92,6 +95,7 @@ if [ ${stage} -le 2 ] && [ ${stop_stage} -ge 2 ]; then
     tools/text2token.py -s 1 -n 1 --space sil --trans_type ${trans_type} data/${train_set}/text  \
       | cut -f 2- -d" " | tr " " "\n" | sort | uniq | grep -v -e '^\s*$' | \
       awk '{print $0 " " NR+2}' >> ${dict}
+    echo ${dict}
     echo "Finish stage 2"
 fi
 
@@ -111,6 +115,7 @@ if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
 fi
 
 if [ ${stage} -le 4 ] && [ ${stop_stage} -ge 4 ]; then
+  echo "start stage 4"
   mkdir -p $dir
   num_gpus=$(echo $CUDA_VISIBLE_DEVICES | awk -F "," '{print NF}')
   # Use "nccl" if it works, otherwise use "gloo"
@@ -140,6 +145,7 @@ if [ ${stage} -le 4 ] && [ ${stop_stage} -ge 4 ]; then
       --pin_memory \
       --deepspeed_config ${deepspeed_config} \
       --deepspeed.save_states ${deepspeed_save_states}
+  echo "Finish stage 4"
 fi
 
 if [ ${stage} -le 5 ] && [ ${stop_stage} -ge 5 ]; then
@@ -147,23 +153,26 @@ if [ ${stage} -le 5 ] && [ ${stop_stage} -ge 5 ]; then
   if [ ${average_checkpoint} == true ]; then
     decode_checkpoint=$dir/avg_${average_num}.pt
     echo "do model average and final checkpoint is $decode_checkpoint"
-    python wenet/bin/average_model.py \
+    $PYTHONPATH wenet/bin/average_model.py \
       --dst_model $decode_checkpoint \
       --src_path $dir  \
       --num ${average_num} \
       --val_best
   fi
+  
   # Please specify decoding_chunk_size for unified streaming and
   # non-streaming model. The default value is -1, which is full chunk
   # for non-streaming inference.
-  decoding_chunk_size=
+  decoding_chunk_size=-1
   ctc_weight=0.5
   reverse_weight=0.0
+  # decode_modes=ctc_gsreedy_search
   for mode in ${decode_modes}; do
   {
-    test_dir=$dir/test_${mode}
+    echo 'Well, let s try to get something right...'
+    test_dir=$dir/${mode}
     mkdir -p $test_dir
-    python wenet/bin/recognize.py --gpu 0 \
+    python3 wenet/bin/recognize.py --gpu 0 \
       --mode $mode \
       --config $dir/train.yaml \
       --data_type $data_type \
@@ -174,10 +183,11 @@ if [ ${stage} -le 5 ] && [ ${stop_stage} -ge 5 ]; then
       --penalty 0.0 \
       --ctc_weight $ctc_weight \
       --reverse_weight $reverse_weight \
-      --result_file $test_dir/text \
-      ${decoding_chunk_size:+--decoding_chunk_size $decoding_chunk_size} \
-      --connect_symbol ▁
-    python tools/compute-wer.py --char=1 --v=1 \
+      --result_dir $dir \
+      ${decoding_chunk_size:+--decoding_chunk_size $decoding_chunk_size}
+      # --connect_symbol ▁
+    echo starting compute_wer.py $mode
+    python3 tools/compute-wer.py --char=1 --v=1 \
       data/test/text $test_dir/text > $test_dir/wer
   } &
   done
@@ -185,14 +195,20 @@ if [ ${stage} -le 5 ] && [ ${stop_stage} -ge 5 ]; then
 fi
 
 if [ ${stage} -le 6 ] && [ ${stop_stage} -ge 6 ]; then
+  echo "start stage 6"
   # compute wer
+  echo ${decode_modes}
   for mode in ${decode_modes}; do
     for test_set in test; do
-     test_dir=$dir/test_${mode}
+
+     test_dir=$dir/${mode}
      sed 's:▁: :g' $test_dir/text > $test_dir/text.norm
-     python tools/compute-wer.py --char=1 --v=1 \
-       data/$test_set/text $test_dir/text.norm > $test_dir/wer
+     python3 tools/compute-wer.py --char=1 --v=1 \
+      data/test/text $test_dir/text > $test_dir/wer
+     python3 tools/compute-wer.py --char=1 --v=1 \
+       data/$test_set/text $test_dir/text.norm > $test_dir/wer_2
     done
   done
+  echo "Finish stage 6"
 fi
 

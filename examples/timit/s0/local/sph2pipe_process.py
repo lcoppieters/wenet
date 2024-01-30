@@ -4,6 +4,7 @@
 import sys
 import os
 
+idiap_compatible = True
 
 def sph2pipe_wav(in_wav, tmp_out_wav, out_wav):
     with open(in_wav, 'r', encoding='utf-8') as in_f:
@@ -14,9 +15,17 @@ def sph2pipe_wav(in_wav, tmp_out_wav, out_wav):
                     wav_out_path = _tmp[4]
                     wav_out_path = wav_out_path.split('/')
                     wav_out_path[-4] = wav_out_path[-4] + '_pipe'
-                    if not os.path.exists('/'.join(wav_out_path[:-1])):
-                        os.makedirs('/'.join(wav_out_path[:-1]))
-                    wav_out_path = '/'.join(wav_out_path)
+                    if idiap_compatible:
+                        wav_out_path_dir = os.environ["TMPDIR"] + '/' + '/'.join(wav_out_path[-4:-1])
+                        if not os.path.exists(wav_out_path_dir):
+                            os.makedirs(wav_out_path_dir)
+                        wav_out_path = wav_out_path_dir + '/' + wav_out_path[-1]
+                    else :
+                        if not os.path.exists('/'.join(wav_out_path[:-1])):
+                            os.makedirs('/'.join(wav_out_path[:-1]))
+                        wav_out_path = '/'.join(wav_out_path)
+                    # import pdb
+                    
                     tmp_out_f.write(' '.join(_tmp[1:5]) + ' ' + wav_out_path +
                                     '\n')
                     out_f.write(_tmp[0] + ' ' + wav_out_path + '\n')
@@ -30,3 +39,4 @@ if __name__ == '__main__':
     tmp_out_wav = sys.argv[2]
     out_wav = sys.argv[3]
     sph2pipe_wav(in_wav, tmp_out_wav, out_wav)
+    
