@@ -23,7 +23,7 @@ The directory $chime4_data_dir should become $chime4_data_dir/CHiME3
 Replace $wsj1_data_dir by $wsj1_data_dir/media
 
 To select the CH1 manually: 
-line 10: track=track="isolated"
+`line 10: track=track="isolated"`
 
 line 35: ./local/simu_enhan_chime4_data_prep.sh ${track}_CH1 $chime4_data_dir/CHiME3/data/audio/16kHz/$track
 line 36: ./local/real_enhan_chime4_data_prep.sh ${track}_CH1 $chime4_data_dir/CHiME3/data/audio/16kHz/$track
@@ -71,7 +71,7 @@ Then in main():
 TODO: fix the cmvn computation
 
 * stage 5:
-    in the arguments of wenet/bin/recognize.py
+    in the arguments of wenet/bin/recognize.py remove
     --result_file
     --dict
 
