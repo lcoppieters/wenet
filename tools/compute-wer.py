@@ -294,6 +294,7 @@ def usage():
 
 
 if __name__ == '__main__':
+    print('heeeey')
     if len(sys.argv) == 1:
         usage()
         sys.exit(0)

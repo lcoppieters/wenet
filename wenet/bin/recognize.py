@@ -230,42 +230,47 @@ def main():
     # TODO(Dinghao Zhou): Support RNN-T related decoding
     # TODO(Lv Xiang): Support k2 related decoding
     # TODO(Kaixun Huang): Support context graph
-    files = {}
+    # files = {}
+
+ 
     for mode in args.modes:
         dir_name = os.path.join(args.result_dir, mode)
         os.makedirs(dir_name, exist_ok=True)
         file_name = os.path.join(dir_name, 'text')
-        files[mode] = open(file_name, 'w')
+        # files[mode] = open(file_name, 'w')
     max_format_len = max([len(mode) for mode in args.modes])
-    with torch.no_grad():
-        for batch_idx, batch in enumerate(test_data_loader):
-            keys = batch["keys"]
-            feats = batch["feats"].to(device)
-            target = batch["target"].to(device)
-            feats_lengths = batch["feats_lengths"].to(device)
-            target_lengths = batch["target_lengths"].to(device)
-            results = model.decode(
-                args.modes,
-                feats,
-                feats_lengths,
-                args.beam_size,
-                decoding_chunk_size=args.decoding_chunk_size,
-                num_decoding_left_chunks=args.num_decoding_left_chunks,
-                ctc_weight=args.ctc_weight,
-                simulate_streaming=args.simulate_streaming,
-                reverse_weight=args.reverse_weight,
-                context_graph=context_graph,
-                blank_id=blank_id,
-                blank_penalty=args.blank_penalty)
-            for i, key in enumerate(keys):
-                for mode, hyps in results.items():
-                    tokens = hyps[i].tokens
-                    line = '{} {}'.format(key, tokenizer.detokenize(tokens)[0])
-                    logging.info('{} {}'.format(mode.ljust(max_format_len),
-                                                line))
-                    files[mode].write(line + '\n')
-    for mode, f in files.items():
-        f.close()
+    with open(file_name, 'w') as file:
+        with torch.no_grad():
+            for batch_idx, batch in enumerate(test_data_loader):
+                keys = batch["keys"]
+                feats = batch["feats"].to(device)
+                target = batch["target"].to(device)
+                feats_lengths = batch["feats_lengths"].to(device)
+                target_lengths = batch["target_lengths"].to(device)
+                results = model.decode(
+                    args.modes,
+                    feats,
+                    feats_lengths,
+                    args.beam_size,
+                    decoding_chunk_size=args.decoding_chunk_size,
+                    num_decoding_left_chunks=args.num_decoding_left_chunks,
+                    ctc_weight=args.ctc_weight,
+                    simulate_streaming=args.simulate_streaming,
+                    reverse_weight=args.reverse_weight,
+                    context_graph=context_graph,
+                    blank_id=blank_id,
+                    blank_penalty=args.blank_penalty)
+                for i, key in enumerate(keys):
+                    for mode, hyps in results.items():
+                        tokens = hyps[i].tokens
+                        line = '{} {}'.format(key, tokenizer.detokenize(tokens)[0])
+                        logging.info('{} {}'.format(mode.ljust(max_format_len),
+                                                    line))
+                        file.write(line + '\n')
+
+        file.close()
+    # for mode, f in files.items():
+    #     f.close()
 
 
 if __name__ == '__main__':

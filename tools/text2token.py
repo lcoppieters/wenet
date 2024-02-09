@@ -87,6 +87,8 @@ def get_parser():
 
 
 def main():
+    # import pdb
+    # pdb.set_trace()
     parser = get_parser()
     args = parser.parse_args()
 
@@ -107,11 +109,14 @@ def main():
         f = codecs.getreader("utf-8")(
             sys.stdin if is_python2 else sys.stdin.buffer)
 
+    # pdb.set_trace()
+
     sys.stdout = codecs.getwriter("utf-8")(
         sys.stdout if is_python2 else sys.stdout.buffer)
     line = f.readline()
     n = args.nchar
     while line:
+        # pdb.set_trace()
         x = line.split()
         print(' '.join(x[:args.skip_ncols]), end=" ")
         a = ' '.join(x[args.skip_ncols:])
@@ -165,6 +170,8 @@ def main():
         a_chars = [z.replace(' ', args.space) for z in a_flat]
         if (args.trans_type == "phn"):
             a_chars = [z.replace("sil", args.space) for z in a_chars]
+        # pdb.set_trace()
+
         print(' '.join(a_chars))
         line = f.readline()
 

@@ -41,11 +41,12 @@ fi
 
 cd $dir
 
-find $audio_dir/ -name '*.wav' | grep 'tr05_bus_simu\|tr05_caf_simu\|tr05_ped_simu\|tr05_str_simu' | sort -u > tr05_simu_$enhan.flist
-find $audio_dir/ -name '*.wav' | grep 'dt05_bus_simu\|dt05_caf_simu\|dt05_ped_simu\|dt05_str_simu' | sort -u > dt05_simu_$enhan.flist
+find $audio_dir/ -name '*.CH1.wav' | grep 'tr05_bus_simu\|tr05_caf_simu\|tr05_ped_simu\|tr05_str_simu' | sort -u > tr05_simu_$enhan.flist
+find $audio_dir/ -name '*.CH1.wav' | grep 'dt05_bus_simu\|dt05_caf_simu\|dt05_ped_simu\|dt05_str_simu' | sort -u > dt05_simu_$enhan.flist
 if $eval_flag; then
-find $audio_dir/ -name '*.wav' | grep 'et05_bus_simu\|et05_caf_simu\|et05_ped_simu\|et05_str_simu' | sort -u > et05_simu_$enhan.flist
+find $audio_dir/ -name '*.CH1.wav' | grep 'et05_bus_simu\|et05_caf_simu\|et05_ped_simu\|et05_str_simu' | sort -u > et05_simu_$enhan.flist
 fi
+echo et05_simu_$enhan.flist
 
 # make a scp file from file list
 for x in $list_set; do
@@ -56,21 +57,23 @@ done
 # make a transcription from dot
 # simulation training data extract dot file from original WSJ0 data
 # since it is generated from these data
+echo dot_files.flist
 if [ ! -e dot_files.flist ]; then
   echo "Could not find $dir/dot_files.flist files, first run local/clean_wsj0_data_prep.sh";
   exit 1;
 fi
+echo tr05_simu_${enhan}_wav.scp
 cat tr05_simu_${enhan}_wav.scp | awk -F'[_]' '{print $2}' | tr '[A-Z]' '[a-z]' \
     | $local/find_noisy_transcripts.pl dot_files.flist | cut -f 2- -d" " > tr05_simu_$enhan.txt
 cat tr05_simu_${enhan}_wav.scp | cut -f 1 -d" " > tr05_simu_$enhan.ids
 paste -d" " tr05_simu_$enhan.ids tr05_simu_$enhan.txt | sort -k 1 > tr05_simu_$enhan.trans1
 # dt05 and et05 simulation data are generated from the CHiME4 booth recording
 # and we use CHiME4 dot files
-cat dt05_simu.dot | sed -e 's/(\(.*\))/\1/' | awk '{print $NF "_SIMU"}'> dt05_simu_$enhan.ids
+cat dt05_simu.dot | sed -e 's/(\(.*\))/\1/' | awk '{print $NF ".CH1_SIMU"}'> dt05_simu_$enhan.ids
 cat dt05_simu.dot | sed -e 's/(.*)//' > dt05_simu_$enhan.txt
 paste -d" " dt05_simu_$enhan.ids dt05_simu_$enhan.txt | sort -k 1 > dt05_simu_$enhan.trans1
 if $eval_flag; then
-cat et05_simu.dot | sed -e 's/(\(.*\))/\1/' | awk '{print $NF "_SIMU"}'> et05_simu_$enhan.ids
+cat et05_simu.dot | sed -e 's/(\(.*\))/\1/' | awk '{print $NF ".CH1_SIMU"}'> et05_simu_$enhan.ids
 cat et05_simu.dot | sed -e 's/(.*)//' > et05_simu_$enhan.txt
 paste -d" " et05_simu_$enhan.ids et05_simu_$enhan.txt | sort -k 1 > et05_simu_$enhan.trans1
 fi

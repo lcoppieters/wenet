@@ -43,6 +43,8 @@ def get_args():
                         default='torch_ddp',
                         choices=['torch_ddp', 'deepspeed'],
                         help='Engine for paralleled training')
+    parser.add_argument('--symbol_table', help='path to dict')
+    parser.add_argument('--cmvn', help='path to cmvn')
     parser = add_model_args(parser)
     parser = add_dataset_args(parser)
     parser = add_ddp_args(parser)
@@ -65,13 +67,17 @@ def main():
 
     # Set random seed
     torch.manual_seed(777)
-
     # Read config
     with open(args.config, 'r') as fin:
         configs = yaml.load(fin, Loader=yaml.FullLoader)
     if len(args.override_config) > 0:
         configs = override_config(configs, args.override_config)
-
+    if args.symbol_table is not None:
+        configs['tokenizer_conf']={}
+        configs['tokenizer_conf']['symbol_table_path'] = args.symbol_table
+        configs['tokenizer_conf']['non_lang_syms_path'] = None
+        
+    
     # init tokenizer
     tokenizer = init_tokenizer(configs)
 
@@ -139,8 +145,9 @@ def main():
         # NOTE(xcsong): Why we need a new group? see `train_utils.py::wenet_join`
         group_join = dist.new_group(
             backend="gloo", timeout=datetime.timedelta(seconds=args.timeout))
-        executor.train(model, optimizer, scheduler, train_data_loader,
-                       cv_data_loader, writer, configs, scaler, group_join)
+        executor.train(model, optimizer, scheduler, train_data_loader, cv_data_loader, writer, configs, scaler, group_join)
+        
+        
         dist.destroy_process_group(group_join)
 
         dist.barrier(
@@ -168,7 +175,7 @@ def main():
         final_model_path = os.path.join(args.model_dir, 'final.pt')
         os.remove(final_model_path) if os.path.exists(
             final_model_path) else None
-        os.symlink('{}.pt'.format(final_epoch), final_model_path)
+        os.symlink('epoch_{}.pt'.format(final_epoch), final_model_path)
         writer.close()
 
 

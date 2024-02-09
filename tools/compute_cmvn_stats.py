@@ -122,7 +122,9 @@ if __name__ == '__main__':
         all_mean_stat = torch.zeros(feat_dim)
         all_var_stat = torch.zeros(feat_dim)
         wav_number = 0
+
         for i, batch in enumerate(data_loader):
+            
             number, mean_stat, var_stat = batch
             all_mean_stat += mean_stat
             all_var_stat += var_stat

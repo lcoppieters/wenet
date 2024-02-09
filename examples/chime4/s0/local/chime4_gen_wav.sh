@@ -17,7 +17,12 @@ echo "Orginal utterances (.wav + .wv1): $num_utts"
 # cat $data_dir/wav.scp | grep "sph2pipe" | \
 #   awk -v dir=$dump_dir '{printf("%s -f wav %s %s/%s.wav\n", $2, $5, dir, $1)}' | bash
 
-cat $data_dir/wav.scp | grep -v "sph2pipe" > $data_dir/raw_wav.scp
+echo 'done sph2pipe'
+
+cat $data_dir/wav.scp | grep -v "sph2pipe" > $data_dir/raw_wav.scp #|| true
+
+echo done raw_wav.scp
+
 find $dump_dir -name "*.wav" | awk -F '/' '{printf("%s %s\n", $NF, $0)}' | \
   sed 's:\.wav::' > $data_dir/sph_wav.scp
 

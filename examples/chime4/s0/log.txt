@@ -1,0 +1,561 @@
+4 4
+start stage 4
+here
+conf/train_conformer.yaml
+data/chime4/train/data.list
+data/chime4/dev/data.list
+/idiap/temp/lcoppieters/tmp_chime4/exp/1a
+data/chime4/dict_char.txt
+/idiap/temp/lcoppieters/tmp_chime4/exp/1a/global_cmvn
+/idiap/temp/lcoppieters/tmp_chime4/exp/1a/train.log
+[2024-02-06 16:25:24,855] [INFO] [real_accelerator.py:191:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+/idiap/home/lcoppieters/.local/lib/python3.9/site-packages/torch/_jit_internal.py:730: FutureWarning: ignore(True) has been deprecated. TorchScript will now drop the function call on compilation. Use torch.jit.unused now. {}
+  warnings.warn(
+2024-02-06 16:25:26,246 INFO use char tokenizer
+2024-02-06 16:25:26,247 INFO training on multiple gpus, this gpu 0, rank 0, world_size 1
+{'encoder': 'conformer', 'encoder_conf': {'output_size': 512, 'attention_heads': 8, 'linear_units': 2048, 'num_blocks': 12, 'dropout_rate': 0.1, 'positional_dropout_rate': 0.1, 'attention_dropout_rate': 0.0, 'input_layer': 'conv2d', 'normalize_before': True, 'cnn_module_kernel': 15, 'use_cnn_module': True, 'activation_type': 'swish', 'pos_enc_layer_type': 'rel_pos', 'selfattention_layer_type': 'rel_selfattn'}, 'decoder': 'transformer', 'decoder_conf': {'attention_heads': 8, 'linear_units': 2048, 'num_blocks': 6, 'dropout_rate': 0.1, 'positional_dropout_rate': 0.1, 'self_attention_dropout_rate': 0.0, 'src_attention_dropout_rate': 0.0}, 'model_conf': {'ctc_weight': 0.3, 'lsm_weight': 0.1, 'length_normalized_loss': False}, 'dataset_conf': {'split_with_space': True, 'filter_conf': {'max_length': 40960, 'min_length': 0, 'token_max_length': 200, 'token_min_length': 1}, 'resample_conf': {'resample_rate': 16000}, 'speed_perturb': True, 'fbank_conf': {'num_mel_bins': 80, 'frame_shift': 10, 'frame_length': 25, 'dither': 0.1}, 'spec_aug': True, 'spec_aug_conf': {'num_t_mask': 2, 'num_f_mask': 2, 'max_t': 40, 'max_f': 10}, 'shuffle': True, 'shuffle_conf': {'shuffle_size': 1500}, 'sort': True, 'sort_conf': {'sort_size': 500}, 'batch_conf': {'batch_type': 'static', 'batch_size': 8}}, 'grad_clip': 10, 'accum_grad': 4, 'max_epoch': 3, 'log_interval': 200, 'optim': 'adam', 'optim_conf': {'lr': 0.0005}, 'scheduler': 'warmuplr', 'scheduler_conf': {'warmup_steps': 20000}, 'tokenizer_conf': {'symbol_table_path': 'data/chime4/dict_char.txt', 'non_lang_syms_path': None}, 'vocab_size': 47, 'dtype': 'fp32', 'ctc_conf': {'ctc_blank_id': 0}, 'input_dim': 80, 'output_dim': 47, 'train_engine': 'torch_ddp', 'use_amp': False, 'model_dir': '/idiap/temp/lcoppieters/tmp_chime4/exp/1a', 'save_states': 'model_only', 'init_infos': {}}
+2024-02-06 16:25:30,017 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1a/init.pt
+2024-02-06 16:25:31,485 INFO Epoch 0 TRAIN info lr 2.5e-08 rank 0
+2024-02-06 16:25:31,498 INFO using accumulate grad, new batch size is 4 times larger than before
+[W reducer.cpp:1346] Warning: find_unused_parameters=True was specified in DDP constructor, but did not find any unused parameters in the forward pass. This flag results in an extra traversal of the autograd graph every iteration,  which can adversely affect performance. If your model indeed never has any unused parameters in the forward pass, consider turning this flag off. Note that this warning may be a false positive if your model has flow control causing later iterations to have unused parameters. (function operator())
+2024-02-06 16:34:15,685 DEBUG TRAIN Batch 0/200 loss 340.326355 loss_att 486.180511 loss_ctc 0.000000 th_accuracy 0.076296 lr 0.00000125 grad_norm 990.632080 rank 0
+2024-02-06 16:34:47,963 DEBUG TRAIN Batch 0/400 loss 268.923523 loss_att 384.176453 loss_ctc 0.000000 th_accuracy 0.447412 lr 0.00000250 grad_norm 776.547729 rank 0
+2024-02-06 16:35:21,264 DEBUG TRAIN Batch 0/600 loss 228.104523 loss_att 325.863617 loss_ctc 0.000000 th_accuracy 0.604839 lr 0.00000375 grad_norm 617.426392 rank 0
+2024-02-06 16:40:32,288 DEBUG TRAIN Batch 0/800 loss 118.669205 loss_att 169.527435 loss_ctc 0.000000 th_accuracy 0.716450 lr 0.00000500 grad_norm 160.078384 rank 0
+2024-02-06 16:41:02,486 DEBUG TRAIN Batch 0/1000 loss 169.369812 loss_att 241.956879 loss_ctc 0.000000 th_accuracy 0.694636 lr 0.00000625 grad_norm 184.058548 rank 0
+2024-02-06 16:41:31,807 DEBUG TRAIN Batch 0/1200 loss 120.626610 loss_att 172.323730 loss_ctc 0.000000 th_accuracy 0.721138 lr 0.00000750 grad_norm 48.679329 rank 0
+2024-02-06 16:42:33,383 INFO Epoch 0 CV info lr 8.05e-06 cv_loss 108.25353711836178 rank 0 acc 0.7054316719373067
+2024-02-06 16:42:33,385 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1a/epoch_0.pt
+2024-02-06 16:42:34,642 INFO Epoch 1 TRAIN info lr 8.05e-06 rank 0
+2024-02-06 16:42:34,660 INFO using accumulate grad, new batch size is 4 times larger than before
+2024-02-06 16:44:57,493 DEBUG TRAIN Batch 1/200 loss 133.400558 loss_att 190.572235 loss_ctc 0.000000 th_accuracy 0.703148 lr 0.00000930 grad_norm 25.329105 rank 0
+2024-02-06 16:45:31,129 DEBUG TRAIN Batch 1/400 loss 125.799088 loss_att 179.712982 loss_ctc 0.000000 th_accuracy 0.715822 lr 0.00001055 grad_norm 22.314379 rank 0
+2024-02-06 16:46:03,862 DEBUG TRAIN Batch 1/600 loss 115.356934 loss_att 164.795624 loss_ctc 0.000000 th_accuracy 0.684071 lr 0.00001180 grad_norm 29.913191 rank 0
+2024-02-06 16:46:49,326 DEBUG TRAIN Batch 1/800 loss 85.508987 loss_att 122.155701 loss_ctc 0.000000 th_accuracy 0.707207 lr 0.00001305 grad_norm 20.775602 rank 0
+2024-02-06 16:47:20,412 DEBUG TRAIN Batch 1/1000 loss 135.014694 loss_att 192.878128 loss_ctc 0.000000 th_accuracy 0.707246 lr 0.00001430 grad_norm 40.932667 rank 0
+2024-02-06 16:47:52,890 DEBUG TRAIN Batch 1/1200 loss 131.812943 loss_att 188.304199 loss_ctc 0.000000 th_accuracy 0.708151 lr 0.00001555 grad_norm 49.834427 rank 0
+2024-02-06 16:48:22,739 INFO Epoch 1 CV info lr 1.61e-05 cv_loss 105.20298622927051 rank 0 acc 0.7078902131035214
+2024-02-06 16:48:22,739 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1a/epoch_1.pt
+2024-02-06 16:48:24,388 INFO Epoch 2 TRAIN info lr 1.61e-05 rank 0
+2024-02-06 16:48:24,412 INFO using accumulate grad, new batch size is 4 times larger than before
+2024-02-06 16:50:46,174 DEBUG TRAIN Batch 2/200 loss 135.304688 loss_att 193.292419 loss_ctc 0.000000 th_accuracy 0.700577 lr 0.00001735 grad_norm 20.795069 rank 0
+2024-02-06 16:51:19,447 DEBUG TRAIN Batch 2/400 loss 123.806862 loss_att 176.866943 loss_ctc 0.000000 th_accuracy 0.715944 lr 0.00001860 grad_norm 18.769529 rank 0
+2024-02-06 16:51:52,514 DEBUG TRAIN Batch 2/600 loss 115.514267 loss_att 165.020386 loss_ctc 0.000000 th_accuracy 0.705537 lr 0.00001985 grad_norm 38.200748 rank 0
+2024-02-06 16:52:37,891 DEBUG TRAIN Batch 2/800 loss 100.290184 loss_att 143.271698 loss_ctc 0.000000 th_accuracy 0.702729 lr 0.00002110 grad_norm 28.144167 rank 0
+2024-02-06 16:53:09,536 DEBUG TRAIN Batch 2/1000 loss 143.697388 loss_att 205.281982 loss_ctc 0.000000 th_accuracy 0.704698 lr 0.00002235 grad_norm 74.259201 rank 0
+2024-02-06 16:53:39,225 DEBUG TRAIN Batch 2/1200 loss 134.704361 loss_att 192.434814 loss_ctc 0.000000 th_accuracy 0.714085 lr 0.00002360 grad_norm 19.092201 rank 0
+2024-02-06 16:54:09,327 INFO Epoch 2 CV info lr 2.4149999999999997e-05 cv_loss 104.13888059276745 rank 0 acc 0.7128276756831577
+2024-02-06 16:54:09,328 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1a/epoch_2.pt
+Traceback (most recent call last):
+  File "/remote/idiap.svm/user.active/lcoppieters/TL/wenet/examples/chime4/s0/wenet/bin/train.py", line 183, in <module>
+    main()
+  File "/idiap/home/lcoppieters/.local/lib/python3.9/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 346, in wrapper
+    return f(*args, **kwargs)
+  File "/remote/idiap.svm/user.active/lcoppieters/TL/wenet/examples/chime4/s0/wenet/bin/train.py", line 178, in main
+    os.symlink('{}.pt'.format(final_epoch), final_model_path)
+FileExistsError: [Errno 17] File exists: '2.pt' -> '/idiap/temp/lcoppieters/tmp_chime4/exp/1a/final.pt'
+2024-02-06 16:54:11,257 DEBUG Attempting to acquire lock 140711181229408 on /idiap/home/lcoppieters/.triton/autotune/Fp16Matmul_2d_kernel.pickle.lock
+2024-02-06 16:54:11,279 DEBUG Lock 140711181229408 acquired on /idiap/home/lcoppieters/.triton/autotune/Fp16Matmul_2d_kernel.pickle.lock
+2024-02-06 16:54:11,281 DEBUG Attempting to release lock 140711181229408 on /idiap/home/lcoppieters/.triton/autotune/Fp16Matmul_2d_kernel.pickle.lock
+2024-02-06 16:54:11,282 DEBUG Lock 140711181229408 released on /idiap/home/lcoppieters/.triton/autotune/Fp16Matmul_2d_kernel.pickle.lock
+2024-02-06 16:54:11,283 DEBUG Attempting to acquire lock 140711181229216 on /idiap/home/lcoppieters/.triton/autotune/Fp16Matmul_4d_kernel.pickle.lock
+2024-02-06 16:54:11,285 DEBUG Lock 140711181229216 acquired on /idiap/home/lcoppieters/.triton/autotune/Fp16Matmul_4d_kernel.pickle.lock
+2024-02-06 16:54:11,287 DEBUG Attempting to release lock 140711181229216 on /idiap/home/lcoppieters/.triton/autotune/Fp16Matmul_4d_kernel.pickle.lock
+2024-02-06 16:54:11,287 DEBUG Lock 140711181229216 released on /idiap/home/lcoppieters/.triton/autotune/Fp16Matmul_4d_kernel.pickle.lock
+[2024-02-06 16:54:15,660] torch.distributed.elastic.multiprocessing.api: [ERROR] failed (exitcode: 1) local_rank: 0 (pid: 1805726) of binary: /usr/bin/python3
+[2024-02-06 16:54:15,666] torch.distributed.elastic.multiprocessing.errors.error_handler: [ERROR] no error file defined for parent, to copy child error file (/var/tmp/torchelastic_xms3atu0/none_nx35a5uv/attempt_0/0/error.json)
+Traceback (most recent call last):
+  File "/idiap/home/lcoppieters/.local/bin/torchrun", line 8, in <module>
+    sys.exit(main())
+  File "/idiap/home/lcoppieters/.local/lib/python3.9/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 346, in wrapper
+    return f(*args, **kwargs)
+  File "/idiap/home/lcoppieters/.local/lib/python3.9/site-packages/torch/distributed/run.py", line 806, in main
+    run(args)
+  File "/idiap/home/lcoppieters/.local/lib/python3.9/site-packages/torch/distributed/run.py", line 797, in run
+    elastic_launch(
+  File "/idiap/home/lcoppieters/.local/lib/python3.9/site-packages/torch/distributed/launcher/api.py", line 134, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/idiap/home/lcoppieters/.local/lib/python3.9/site-packages/torch/distributed/launcher/api.py", line 264, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+wenet/bin/train.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2024-02-06_16:54:11
+  host      : vgni005.idiap.ch
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 1805726)
+  error_file: /var/tmp/torchelastic_xms3atu0/none_nx35a5uv/attempt_0/0/error.json
+  traceback : Traceback (most recent call last):
+    File "/idiap/home/lcoppieters/.local/lib/python3.9/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 346, in wrapper
+      return f(*args, **kwargs)
+    File "/remote/idiap.svm/user.active/lcoppieters/TL/wenet/examples/chime4/s0/wenet/bin/train.py", line 178, in main
+      os.symlink('{}.pt'.format(final_epoch), final_model_path)
+  FileExistsError: [Errno 17] File exists: '2.pt' -> '/idiap/temp/lcoppieters/tmp_chime4/exp/1a/final.pt'
+  
+============================================================
+4 4
+start stage 4
+here
+conf/train_conformer.yaml
+data/chime4/train_wsj1/data.list
+data/chime4/dev_wsj1/data.list
+/idiap/temp/lcoppieters/tmp_chime4/exp/1a_wsj1
+data/chime4/dict_char.txt
+/idiap/temp/lcoppieters/tmp_chime4/exp/1a_wsj1/global_cmvn
+/idiap/temp/lcoppieters/tmp_chime4/exp/1a_wsj1/train.log
+end stage 4
+4 4
+start stage 4
+here
+conf/train_conformer.yaml
+data/chime4/train_wsj1/data.list
+data/chime4/dev_wsj1/data.list
+/idiap/temp/lcoppieters/tmp_chime4/exp/1b_wsj1
+data/chime4/dict_char.txt
+/idiap/temp/lcoppieters/tmp_chime4/exp/1b_wsj1/global_cmvn
+/idiap/temp/lcoppieters/tmp_chime4/exp/1b_wsj1/train.log
+[2024-02-06 19:12:49,721] [INFO] [real_accelerator.py:191:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+/idiap/home/lcoppieters/.local/lib/python3.9/site-packages/torch/_jit_internal.py:730: FutureWarning: ignore(True) has been deprecated. TorchScript will now drop the function call on compilation. Use torch.jit.unused now. {}
+  warnings.warn(
+2024-02-06 19:12:51,047 INFO use char tokenizer
+2024-02-06 19:12:51,047 INFO training on multiple gpus, this gpu 0, rank 0, world_size 1
+{'encoder': 'conformer', 'encoder_conf': {'output_size': 512, 'attention_heads': 8, 'linear_units': 2048, 'num_blocks': 12, 'dropout_rate': 0.1, 'positional_dropout_rate': 0.1, 'attention_dropout_rate': 0.0, 'input_layer': 'conv2d', 'normalize_before': True, 'cnn_module_kernel': 15, 'use_cnn_module': True, 'activation_type': 'swish', 'pos_enc_layer_type': 'rel_pos', 'selfattention_layer_type': 'rel_selfattn'}, 'decoder': 'transformer', 'decoder_conf': {'attention_heads': 8, 'linear_units': 2048, 'num_blocks': 6, 'dropout_rate': 0.1, 'positional_dropout_rate': 0.1, 'self_attention_dropout_rate': 0.0, 'src_attention_dropout_rate': 0.0}, 'model_conf': {'ctc_weight': 0.3, 'lsm_weight': 0.1, 'length_normalized_loss': False}, 'dataset_conf': {'split_with_space': True, 'filter_conf': {'max_length': 40960, 'min_length': 0, 'token_max_length': 200, 'token_min_length': 1}, 'resample_conf': {'resample_rate': 16000}, 'speed_perturb': True, 'fbank_conf': {'num_mel_bins': 80, 'frame_shift': 10, 'frame_length': 25, 'dither': 0.1}, 'spec_aug': True, 'spec_aug_conf': {'num_t_mask': 2, 'num_f_mask': 2, 'max_t': 40, 'max_f': 10}, 'shuffle': True, 'shuffle_conf': {'shuffle_size': 1500}, 'sort': True, 'sort_conf': {'sort_size': 500}, 'batch_conf': {'batch_type': 'static', 'batch_size': 8}}, 'grad_clip': 10, 'accum_grad': 4, 'max_epoch': 3, 'log_interval': 200, 'optim': 'adam', 'optim_conf': {'lr': 0.0005}, 'scheduler': 'warmuplr', 'scheduler_conf': {'warmup_steps': 20000}, 'tokenizer_conf': {'symbol_table_path': 'data/chime4/dict_char.txt', 'non_lang_syms_path': None}, 'vocab_size': 47, 'dtype': 'fp32', 'ctc_conf': {'ctc_blank_id': 0}, 'input_dim': 80, 'output_dim': 47, 'train_engine': 'torch_ddp', 'use_amp': False, 'model_dir': '/idiap/temp/lcoppieters/tmp_chime4/exp/1b_wsj1', 'save_states': 'model_only', 'init_infos': {}}
+2024-02-06 19:12:54,300 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1b_wsj1/init.pt
+2024-02-06 19:12:56,077 INFO Epoch 0 TRAIN info lr 2.5e-08 rank 0
+2024-02-06 19:12:56,086 INFO using accumulate grad, new batch size is 4 times larger than before
+[W reducer.cpp:1346] Warning: find_unused_parameters=True was specified in DDP constructor, but did not find any unused parameters in the forward pass. This flag results in an extra traversal of the autograd graph every iteration,  which can adversely affect performance. If your model indeed never has any unused parameters in the forward pass, consider turning this flag off. Note that this warning may be a false positive if your model has flow control causing later iterations to have unused parameters. (function operator())
+2024-02-06 19:14:28,953 DEBUG TRAIN Batch 0/200 loss 506.378662 loss_att 491.116913 loss_ctc 541.989380 th_accuracy 0.054076 lr 0.00000125 grad_norm 451.737396 rank 0
+2024-02-06 19:15:09,071 DEBUG TRAIN Batch 0/400 loss 311.171570 loss_att 312.082092 loss_ctc 309.046967 th_accuracy 0.068408 lr 0.00000250 grad_norm 146.559647 rank 0
+2024-02-06 19:15:54,127 DEBUG TRAIN Batch 0/600 loss 266.849274 loss_att 266.313599 loss_ctc 268.099213 th_accuracy 0.106648 lr 0.00000375 grad_norm 107.099670 rank 0
+2024-02-06 19:16:35,965 DEBUG TRAIN Batch 0/800 loss 192.067459 loss_att 187.179092 loss_ctc 203.473663 th_accuracy 0.166667 lr 0.00000500 grad_norm 114.110992 rank 0
+2024-02-06 19:17:15,135 DEBUG TRAIN Batch 0/1000 loss 422.674683 loss_att 405.548035 loss_ctc 462.636841 th_accuracy 0.159236 lr 0.00000625 grad_norm 278.140350 rank 0
+2024-02-06 19:17:55,305 DEBUG TRAIN Batch 0/1200 loss 355.071808 loss_att 333.749878 loss_ctc 404.822998 th_accuracy 0.204360 lr 0.00000750 grad_norm 108.784431 rank 0
+2024-02-06 19:18:39,715 DEBUG TRAIN Batch 0/1400 loss 309.084412 loss_att 285.685272 loss_ctc 363.682343 th_accuracy 0.229770 lr 0.00000875 grad_norm 71.344330 rank 0
+2024-02-06 19:19:19,036 DEBUG TRAIN Batch 0/1600 loss 216.516724 loss_att 198.964249 loss_ctc 257.472473 th_accuracy 0.231944 lr 0.00001000 grad_norm 57.065205 rank 0
+2024-02-06 19:20:00,093 DEBUG TRAIN Batch 0/1800 loss 151.402786 loss_att 137.310608 loss_ctc 184.284515 th_accuracy 0.260618 lr 0.00001125 grad_norm 37.525658 rank 0
+2024-02-06 19:20:44,887 DEBUG TRAIN Batch 0/2000 loss 390.989807 loss_att 352.565338 loss_ctc 480.646912 th_accuracy 0.248498 lr 0.00001250 grad_norm 86.891449 rank 0
+2024-02-06 19:21:28,335 DEBUG TRAIN Batch 0/2200 loss 325.314087 loss_att 292.795563 loss_ctc 401.190613 th_accuracy 0.256295 lr 0.00001375 grad_norm 79.287033 rank 0
+2024-02-06 19:22:08,700 DEBUG TRAIN Batch 0/2400 loss 276.564423 loss_att 251.349121 loss_ctc 335.400116 th_accuracy 0.278287 lr 0.00001500 grad_norm 44.822449 rank 0
+2024-02-06 19:22:49,756 DEBUG TRAIN Batch 0/2600 loss 192.146667 loss_att 175.181641 loss_ctc 231.731720 th_accuracy 0.247041 lr 0.00001625 grad_norm 82.239235 rank 0
+2024-02-06 19:23:36,495 DEBUG TRAIN Batch 0/2800 loss 134.753265 loss_att 123.464058 loss_ctc 161.094727 th_accuracy 0.283058 lr 0.00001750 grad_norm 32.897655 rank 0
+2024-02-06 19:24:19,596 DEBUG TRAIN Batch 0/3000 loss 359.263947 loss_att 334.715271 loss_ctc 416.544189 th_accuracy 0.244375 lr 0.00001875 grad_norm 100.988235 rank 0
+2024-02-06 19:24:58,630 DEBUG TRAIN Batch 0/3200 loss 285.367645 loss_att 266.164368 loss_ctc 330.175323 th_accuracy 0.277027 lr 0.00002000 grad_norm 91.632256 rank 0
+2024-02-06 19:25:39,347 DEBUG TRAIN Batch 0/3400 loss 263.031311 loss_att 244.295746 loss_ctc 306.747681 th_accuracy 0.264798 lr 0.00002125 grad_norm 136.082214 rank 0
+2024-02-06 19:26:21,716 DEBUG TRAIN Batch 0/3600 loss 226.174652 loss_att 209.164917 loss_ctc 265.864075 th_accuracy 0.280618 lr 0.00002250 grad_norm 85.063263 rank 0
+2024-02-06 19:27:30,469 DEBUG CV Batch 0/200 loss 377.307526 loss_att 315.558533 loss_ctc 521.388489 th_accuracy 0.251006 
+2024-02-06 19:27:31,030 INFO Epoch 0 CV info lr 2.3624999999999998e-05 cv_loss 236.06944579705277 rank 0 acc 0.26839462595367897
+2024-02-06 19:27:31,032 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1b_wsj1/epoch_0.pt
+2024-02-06 19:27:32,400 INFO Epoch 1 TRAIN info lr 2.3624999999999998e-05 rank 0
+2024-02-06 19:27:32,429 INFO using accumulate grad, new batch size is 4 times larger than before
+2024-02-06 19:28:54,819 DEBUG TRAIN Batch 1/200 loss 303.157715 loss_att 290.983276 loss_ctc 331.564697 th_accuracy 0.259488 lr 0.00002487 grad_norm 97.820290 rank 0
+2024-02-06 19:29:38,500 DEBUG TRAIN Batch 1/400 loss 253.055771 loss_att 239.704834 loss_ctc 284.207947 th_accuracy 0.274841 lr 0.00002612 grad_norm 81.289749 rank 0
+2024-02-06 19:30:23,831 DEBUG TRAIN Batch 1/600 loss 196.928253 loss_att 188.719147 loss_ctc 216.082886 th_accuracy 0.284367 lr 0.00002737 grad_norm 97.915924 rank 0
+2024-02-06 19:31:06,556 DEBUG TRAIN Batch 1/800 loss 148.139984 loss_att 144.435135 loss_ctc 156.784637 th_accuracy 0.269896 lr 0.00002862 grad_norm 145.407013 rank 0
+2024-02-06 19:31:48,064 DEBUG TRAIN Batch 1/1000 loss 326.373352 loss_att 324.547028 loss_ctc 330.634766 th_accuracy 0.244076 lr 0.00002987 grad_norm 143.355621 rank 0
+2024-02-06 19:32:29,753 DEBUG TRAIN Batch 1/1200 loss 259.331604 loss_att 261.183350 loss_ctc 255.010925 th_accuracy 0.260577 lr 0.00003112 grad_norm 131.737701 rank 0
+2024-02-06 19:33:13,208 DEBUG TRAIN Batch 1/1400 loss 255.443848 loss_att 248.185196 loss_ctc 272.380707 th_accuracy 0.285858 lr 0.00003238 grad_norm 191.740311 rank 0
+2024-02-06 19:33:53,586 DEBUG TRAIN Batch 1/1600 loss 196.530472 loss_att 185.155075 loss_ctc 223.073059 th_accuracy 0.293011 lr 0.00003362 grad_norm 87.846375 rank 0
+2024-02-06 19:34:34,911 DEBUG TRAIN Batch 1/1800 loss 141.110748 loss_att 137.830200 loss_ctc 148.765350 th_accuracy 0.284936 lr 0.00003487 grad_norm 62.664883 rank 0
+2024-02-06 19:35:19,500 DEBUG TRAIN Batch 1/2000 loss 312.525391 loss_att 325.306702 loss_ctc 282.702271 th_accuracy 0.242329 lr 0.00003612 grad_norm 164.463211 rank 0
+2024-02-06 19:35:59,626 DEBUG TRAIN Batch 1/2200 loss 259.423615 loss_att 265.883606 loss_ctc 244.350357 th_accuracy 0.253630 lr 0.00003737 grad_norm 132.803650 rank 0
+2024-02-06 19:36:41,101 DEBUG TRAIN Batch 1/2400 loss 243.053955 loss_att 244.371887 loss_ctc 239.978806 th_accuracy 0.262448 lr 0.00003862 grad_norm 121.918579 rank 0
+2024-02-06 19:37:23,557 DEBUG TRAIN Batch 1/2600 loss 196.498718 loss_att 194.031708 loss_ctc 202.255066 th_accuracy 0.275418 lr 0.00003988 grad_norm 91.974686 rank 0
+2024-02-06 19:38:09,085 DEBUG TRAIN Batch 1/2800 loss 156.901276 loss_att 154.420822 loss_ctc 162.688995 th_accuracy 0.275527 lr 0.00004112 grad_norm 88.354263 rank 0
+2024-02-06 19:38:50,519 DEBUG TRAIN Batch 1/3000 loss 323.003326 loss_att 339.081055 loss_ctc 285.488647 th_accuracy 0.251309 lr 0.00004237 grad_norm 275.079834 rank 0
+2024-02-06 19:39:30,518 DEBUG TRAIN Batch 1/3200 loss 253.636108 loss_att 261.225769 loss_ctc 235.926880 th_accuracy 0.257310 lr 0.00004362 grad_norm 177.202026 rank 0
+2024-02-06 19:40:12,192 DEBUG TRAIN Batch 1/3400 loss 214.494049 loss_att 221.990509 loss_ctc 197.002319 th_accuracy 0.267327 lr 0.00004487 grad_norm 107.898003 rank 0
+2024-02-06 19:40:53,739 DEBUG TRAIN Batch 1/3600 loss 174.679581 loss_att 175.636948 loss_ctc 172.445740 th_accuracy 0.280677 lr 0.00004612 grad_norm 94.342522 rank 0
+2024-02-06 19:41:52,154 DEBUG CV Batch 1/200 loss 364.115936 loss_att 312.756805 loss_ctc 483.953888 th_accuracy 0.242961 
+2024-02-06 19:41:52,579 INFO Epoch 1 CV info lr 4.7249999999999997e-05 cv_loss 224.35881483372785 rank 0 acc 0.2764565521507587
+2024-02-06 19:41:52,582 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1b_wsj1/epoch_1.pt
+2024-02-06 19:41:54,024 INFO Epoch 2 TRAIN info lr 4.7249999999999997e-05 rank 0
+2024-02-06 19:41:54,041 INFO using accumulate grad, new batch size is 4 times larger than before
+2024-02-06 19:43:14,382 DEBUG TRAIN Batch 2/200 loss 271.869690 loss_att 276.065735 loss_ctc 262.078888 th_accuracy 0.274616 lr 0.00004850 grad_norm 162.714478 rank 0
+2024-02-06 19:43:58,989 DEBUG TRAIN Batch 2/400 loss 232.378967 loss_att 236.807663 loss_ctc 222.045319 th_accuracy 0.261603 lr 0.00004975 grad_norm 114.320572 rank 0
+2024-02-06 19:44:43,015 DEBUG TRAIN Batch 2/600 loss 149.410126 loss_att 156.219650 loss_ctc 133.521240 th_accuracy 0.293461 lr 0.00005100 grad_norm 175.968491 rank 0
+2024-02-06 19:45:25,877 DEBUG TRAIN Batch 2/800 loss 124.508904 loss_att 125.154930 loss_ctc 123.001503 th_accuracy 0.275794 lr 0.00005225 grad_norm 81.369949 rank 0
+2024-02-06 19:46:07,234 DEBUG TRAIN Batch 2/1000 loss 287.920532 loss_att 315.921631 loss_ctc 222.584671 th_accuracy 0.261076 lr 0.00005350 grad_norm 206.317856 rank 0
+2024-02-06 19:46:50,006 DEBUG TRAIN Batch 2/1200 loss 253.706390 loss_att 267.365997 loss_ctc 221.834000 th_accuracy 0.287020 lr 0.00005475 grad_norm 135.232971 rank 0
+2024-02-06 19:47:35,109 DEBUG TRAIN Batch 2/1400 loss 208.289825 loss_att 214.269958 loss_ctc 194.336212 th_accuracy 0.286543 lr 0.00005600 grad_norm 102.002846 rank 0
+2024-02-06 19:48:16,768 DEBUG TRAIN Batch 2/1600 loss 179.567917 loss_att 190.494507 loss_ctc 154.072571 th_accuracy 0.278834 lr 0.00005725 grad_norm 146.709076 rank 0
+2024-02-06 19:48:59,024 DEBUG TRAIN Batch 2/1800 loss 115.575760 loss_att 118.858147 loss_ctc 107.916855 th_accuracy 0.270613 lr 0.00005850 grad_norm 100.067566 rank 0
+2024-02-06 19:49:44,267 DEBUG TRAIN Batch 2/2000 loss 287.402557 loss_att 325.506897 loss_ctc 198.492447 th_accuracy 0.256098 lr 0.00005975 grad_norm 145.873398 rank 0
+2024-02-06 19:50:26,074 DEBUG TRAIN Batch 2/2200 loss 251.552032 loss_att 275.048004 loss_ctc 196.728088 th_accuracy 0.290009 lr 0.00006100 grad_norm 162.899673 rank 0
+2024-02-06 19:51:07,945 DEBUG TRAIN Batch 2/2400 loss 208.855713 loss_att 225.667542 loss_ctc 169.628113 th_accuracy 0.266954 lr 0.00006225 grad_norm 112.715904 rank 0
+2024-02-06 19:51:48,273 DEBUG TRAIN Batch 2/2600 loss 176.998962 loss_att 179.387604 loss_ctc 171.425446 th_accuracy 0.328965 lr 0.00006350 grad_norm 139.783173 rank 0
+2024-02-06 19:52:34,761 DEBUG TRAIN Batch 2/2800 loss 107.940865 loss_att 113.265808 loss_ctc 95.515991 th_accuracy 0.312883 lr 0.00006475 grad_norm 86.499222 rank 0
+2024-02-06 19:53:16,100 DEBUG TRAIN Batch 2/3000 loss 272.067810 loss_att 306.938660 loss_ctc 190.702545 th_accuracy 0.301402 lr 0.00006600 grad_norm 204.616302 rank 0
+2024-02-06 19:53:57,270 DEBUG TRAIN Batch 2/3200 loss 226.157578 loss_att 244.775742 loss_ctc 182.715179 th_accuracy 0.305635 lr 0.00006725 grad_norm 205.080963 rank 0
+2024-02-06 19:54:39,555 DEBUG TRAIN Batch 2/3400 loss 234.793304 loss_att 238.543030 loss_ctc 226.043915 th_accuracy 0.311284 lr 0.00006850 grad_norm 169.929626 rank 0
+2024-02-06 19:55:22,335 DEBUG TRAIN Batch 2/3600 loss 162.793030 loss_att 165.067841 loss_ctc 157.485168 th_accuracy 0.304590 lr 0.00006975 grad_norm 130.088348 rank 0
+2024-02-06 19:56:22,855 DEBUG CV Batch 2/200 loss 349.375702 loss_att 309.643768 loss_ctc 442.083496 th_accuracy 0.275141 
+2024-02-06 19:56:23,266 INFO Epoch 2 CV info lr 7.087499999999999e-05 cv_loss 210.4971319814972 rank 0 acc 0.30408234930443534
+2024-02-06 19:56:23,267 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1b_wsj1/epoch_2.pt
+2024-02-06 19:56:24,747 DEBUG Attempting to acquire lock 140295467938432 on /idiap/home/lcoppieters/.triton/autotune/Fp16Matmul_2d_kernel.pickle.lock
+2024-02-06 19:56:24,770 DEBUG Lock 140295467938432 acquired on /idiap/home/lcoppieters/.triton/autotune/Fp16Matmul_2d_kernel.pickle.lock
+2024-02-06 19:56:24,772 DEBUG Attempting to release lock 140295467938432 on /idiap/home/lcoppieters/.triton/autotune/Fp16Matmul_2d_kernel.pickle.lock
+2024-02-06 19:56:24,773 DEBUG Lock 140295467938432 released on /idiap/home/lcoppieters/.triton/autotune/Fp16Matmul_2d_kernel.pickle.lock
+2024-02-06 19:56:24,775 DEBUG Attempting to acquire lock 140295467938432 on /idiap/home/lcoppieters/.triton/autotune/Fp16Matmul_4d_kernel.pickle.lock
+2024-02-06 19:56:24,777 DEBUG Lock 140295467938432 acquired on /idiap/home/lcoppieters/.triton/autotune/Fp16Matmul_4d_kernel.pickle.lock
+2024-02-06 19:56:24,779 DEBUG Attempting to release lock 140295467938432 on /idiap/home/lcoppieters/.triton/autotune/Fp16Matmul_4d_kernel.pickle.lock
+2024-02-06 19:56:24,779 DEBUG Lock 140295467938432 released on /idiap/home/lcoppieters/.triton/autotune/Fp16Matmul_4d_kernel.pickle.lock
+end stage 4
+4 4
+start stage 4
+here
+conf/train_conformer.yaml
+data/chime4/train_wsj1/data.list
+data/chime4/dev_wsj1/data.list
+/idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1
+data/chime4/dict_char.txt
+/idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1/global_cmvn
+/idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1/train.log
+[2024-02-07 00:24:56,602] [INFO] [real_accelerator.py:191:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+/idiap/home/lcoppieters/.local/lib/python3.9/site-packages/torch/_jit_internal.py:730: FutureWarning: ignore(True) has been deprecated. TorchScript will now drop the function call on compilation. Use torch.jit.unused now. {}
+  warnings.warn(
+2024-02-07 00:24:58,121 INFO use char tokenizer
+2024-02-07 00:24:58,121 INFO training on multiple gpus, this gpu 0, rank 0, world_size 1
+{'encoder': 'conformer', 'encoder_conf': {'output_size': 512, 'attention_heads': 8, 'linear_units': 2048, 'num_blocks': 12, 'dropout_rate': 0.1, 'positional_dropout_rate': 0.1, 'attention_dropout_rate': 0.0, 'input_layer': 'conv2d', 'normalize_before': True, 'cnn_module_kernel': 15, 'use_cnn_module': True, 'activation_type': 'swish', 'pos_enc_layer_type': 'rel_pos', 'selfattention_layer_type': 'rel_selfattn'}, 'decoder': 'transformer', 'decoder_conf': {'attention_heads': 8, 'linear_units': 2048, 'num_blocks': 6, 'dropout_rate': 0.1, 'positional_dropout_rate': 0.1, 'self_attention_dropout_rate': 0.0, 'src_attention_dropout_rate': 0.0}, 'model_conf': {'ctc_weight': 0.3, 'lsm_weight': 0.1, 'length_normalized_loss': False}, 'dataset_conf': {'split_with_space': True, 'filter_conf': {'max_length': 40960, 'min_length': 0, 'token_max_length': 200, 'token_min_length': 1}, 'resample_conf': {'resample_rate': 16000}, 'speed_perturb': True, 'fbank_conf': {'num_mel_bins': 80, 'frame_shift': 10, 'frame_length': 25, 'dither': 0.1}, 'spec_aug': True, 'spec_aug_conf': {'num_t_mask': 2, 'num_f_mask': 2, 'max_t': 40, 'max_f': 10}, 'shuffle': True, 'shuffle_conf': {'shuffle_size': 1500}, 'sort': True, 'sort_conf': {'sort_size': 500}, 'batch_conf': {'batch_type': 'static', 'batch_size': 8}}, 'grad_clip': 10, 'accum_grad': 4, 'max_epoch': 80, 'log_interval': 200, 'optim': 'adam', 'optim_conf': {'lr': 0.0005}, 'scheduler': 'warmuplr', 'scheduler_conf': {'warmup_steps': 20000}, 'tokenizer_conf': {'symbol_table_path': 'data/chime4/dict_char.txt', 'non_lang_syms_path': None}, 'vocab_size': 47, 'dtype': 'fp32', 'ctc_conf': {'ctc_blank_id': 0}, 'input_dim': 80, 'output_dim': 47, 'train_engine': 'torch_ddp', 'use_amp': False, 'model_dir': '/idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1', 'save_states': 'model_only', 'init_infos': {}}
+2024-02-07 00:25:00,652 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1/init.pt
+2024-02-07 00:25:01,708 INFO Epoch 0 TRAIN info lr 2.5e-08 rank 0
+2024-02-07 00:25:01,716 INFO using accumulate grad, new batch size is 4 times larger than before
+[W reducer.cpp:1346] Warning: find_unused_parameters=True was specified in DDP constructor, but did not find any unused parameters in the forward pass. This flag results in an extra traversal of the autograd graph every iteration,  which can adversely affect performance. If your model indeed never has any unused parameters in the forward pass, consider turning this flag off. Note that this warning may be a false positive if your model has flow control causing later iterations to have unused parameters. (function operator())
+2024-02-07 00:26:14,727 DEBUG TRAIN Batch 0/200 loss 506.378601 loss_att 491.116913 loss_ctc 541.989197 th_accuracy 0.054076 lr 0.00000125 grad_norm 451.733551 rank 0
+2024-02-07 00:26:48,875 DEBUG TRAIN Batch 0/400 loss 311.171539 loss_att 312.082092 loss_ctc 309.046936 th_accuracy 0.068408 lr 0.00000250 grad_norm 146.559326 rank 0
+2024-02-07 00:27:25,419 DEBUG TRAIN Batch 0/600 loss 266.849243 loss_att 266.313629 loss_ctc 268.098969 th_accuracy 0.106648 lr 0.00000375 grad_norm 107.100990 rank 0
+2024-02-07 00:28:03,932 DEBUG TRAIN Batch 0/800 loss 192.066391 loss_att 187.178955 loss_ctc 203.470398 th_accuracy 0.166667 lr 0.00000500 grad_norm 114.112480 rank 0
+2024-02-07 00:28:41,940 DEBUG TRAIN Batch 0/1000 loss 422.674194 loss_att 405.547668 loss_ctc 462.636017 th_accuracy 0.159236 lr 0.00000625 grad_norm 278.155548 rank 0
+2024-02-07 00:29:15,154 DEBUG TRAIN Batch 0/1200 loss 355.073975 loss_att 333.749878 loss_ctc 404.830200 th_accuracy 0.204360 lr 0.00000750 grad_norm 108.773468 rank 0
+2024-02-07 00:29:51,723 DEBUG TRAIN Batch 0/1400 loss 309.083313 loss_att 285.685730 loss_ctc 363.677673 th_accuracy 0.229770 lr 0.00000875 grad_norm 71.348228 rank 0
+2024-02-07 00:30:29,701 DEBUG TRAIN Batch 0/1600 loss 216.502625 loss_att 198.963135 loss_ctc 257.428131 th_accuracy 0.231944 lr 0.00001000 grad_norm 56.839745 rank 0
+2024-02-07 00:31:08,953 DEBUG TRAIN Batch 0/1800 loss 151.397339 loss_att 137.310913 loss_ctc 184.265671 th_accuracy 0.260618 lr 0.00001125 grad_norm 37.487461 rank 0
+2024-02-07 00:31:49,183 DEBUG TRAIN Batch 0/2000 loss 390.972107 loss_att 352.567657 loss_ctc 480.582458 th_accuracy 0.249249 lr 0.00001250 grad_norm 86.277237 rank 0
+2024-02-07 00:32:22,609 DEBUG TRAIN Batch 0/2200 loss 325.304657 loss_att 292.798462 loss_ctc 401.152405 th_accuracy 0.256295 lr 0.00001375 grad_norm 81.320946 rank 0
+2024-02-07 00:33:00,204 DEBUG TRAIN Batch 0/2400 loss 276.553406 loss_att 251.347504 loss_ctc 335.367188 th_accuracy 0.278287 lr 0.00001500 grad_norm 44.853474 rank 0
+2024-02-07 00:33:38,878 DEBUG TRAIN Batch 0/2600 loss 192.144592 loss_att 175.178528 loss_ctc 231.732056 th_accuracy 0.247041 lr 0.00001625 grad_norm 81.906776 rank 0
+2024-02-07 00:34:20,079 DEBUG TRAIN Batch 0/2800 loss 134.741547 loss_att 123.466629 loss_ctc 161.049713 th_accuracy 0.283058 lr 0.00001750 grad_norm 33.428417 rank 0
+2024-02-07 00:34:59,765 DEBUG TRAIN Batch 0/3000 loss 358.976288 loss_att 334.709412 loss_ctc 415.598999 th_accuracy 0.245151 lr 0.00001875 grad_norm 101.253525 rank 0
+2024-02-07 00:35:34,172 DEBUG TRAIN Batch 0/3200 loss 285.102203 loss_att 266.181152 loss_ctc 329.251373 th_accuracy 0.277992 lr 0.00002000 grad_norm 87.406219 rank 0
+2024-02-07 00:36:12,934 DEBUG TRAIN Batch 0/3400 loss 263.265991 loss_att 244.376251 loss_ctc 307.342041 th_accuracy 0.265836 lr 0.00002125 grad_norm 160.742035 rank 0
+2024-02-07 00:36:51,131 DEBUG TRAIN Batch 0/3600 loss 226.077698 loss_att 209.189163 loss_ctc 265.484283 th_accuracy 0.278240 lr 0.00002250 grad_norm 98.047302 rank 0
+2024-02-07 00:38:03,783 DEBUG CV Batch 0/200 loss 369.842957 loss_att 315.458618 loss_ctc 496.739746 th_accuracy 0.248592 
+2024-02-07 00:38:04,223 INFO Epoch 0 CV info lr 2.3624999999999998e-05 cv_loss 231.2099234290289 rank 0 acc 0.2671296072816386
+2024-02-07 00:38:04,224 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1/epoch_0.pt
+2024-02-07 00:38:05,416 INFO Epoch 1 TRAIN info lr 2.3624999999999998e-05 rank 0
+2024-02-07 00:38:05,440 INFO using accumulate grad, new batch size is 4 times larger than before
+2024-02-07 00:39:09,805 DEBUG TRAIN Batch 1/200 loss 303.344482 loss_att 291.027069 loss_ctc 332.085083 th_accuracy 0.259488 lr 0.00002487 grad_norm 112.099014 rank 0
+2024-02-07 00:39:47,888 DEBUG TRAIN Batch 1/400 loss 252.960938 loss_att 239.705093 loss_ctc 283.891205 th_accuracy 0.273784 lr 0.00002612 grad_norm 98.157509 rank 0
+2024-02-07 00:40:26,889 DEBUG TRAIN Batch 1/600 loss 196.839539 loss_att 188.717438 loss_ctc 215.791138 th_accuracy 0.284367 lr 0.00002737 grad_norm 84.419075 rank 0
+2024-02-07 00:41:07,469 DEBUG TRAIN Batch 1/800 loss 148.244781 loss_att 144.462326 loss_ctc 157.070526 th_accuracy 0.268166 lr 0.00002862 grad_norm 137.909012 rank 0
+2024-02-07 00:41:47,199 DEBUG TRAIN Batch 1/1000 loss 326.503204 loss_att 324.557861 loss_ctc 331.042297 th_accuracy 0.244076 lr 0.00002987 grad_norm 163.513199 rank 0
+2024-02-07 00:42:22,124 DEBUG TRAIN Batch 1/1200 loss 259.023346 loss_att 261.189880 loss_ctc 253.968109 th_accuracy 0.261538 lr 0.00003112 grad_norm 112.678398 rank 0
+2024-02-07 00:42:59,453 DEBUG TRAIN Batch 1/1400 loss 255.067261 loss_att 248.172256 loss_ctc 271.155609 th_accuracy 0.286861 lr 0.00003238 grad_norm 184.328781 rank 0
+2024-02-07 00:43:37,682 DEBUG TRAIN Batch 1/1600 loss 196.457703 loss_att 185.096039 loss_ctc 222.968201 th_accuracy 0.291667 lr 0.00003362 grad_norm 96.715607 rank 0
+2024-02-07 00:44:16,326 DEBUG TRAIN Batch 1/1800 loss 140.811768 loss_att 137.827545 loss_ctc 147.774963 th_accuracy 0.284936 lr 0.00003487 grad_norm 66.159622 rank 0
+2024-02-07 00:44:55,518 DEBUG TRAIN Batch 1/2000 loss 312.862213 loss_att 325.234436 loss_ctc 283.993652 th_accuracy 0.242329 lr 0.00003612 grad_norm 232.439804 rank 0
+2024-02-07 00:45:29,709 DEBUG TRAIN Batch 1/2200 loss 259.516937 loss_att 265.864075 loss_ctc 244.706940 th_accuracy 0.255566 lr 0.00003737 grad_norm 149.604752 rank 0
+2024-02-07 00:46:06,456 DEBUG TRAIN Batch 1/2400 loss 243.105331 loss_att 244.463058 loss_ctc 239.937286 th_accuracy 0.259336 lr 0.00003862 grad_norm 137.918869 rank 0
+2024-02-07 00:46:43,580 DEBUG TRAIN Batch 1/2600 loss 196.657959 loss_att 194.024719 loss_ctc 202.802185 th_accuracy 0.274131 lr 0.00003988 grad_norm 98.519211 rank 0
+2024-02-07 00:47:21,735 DEBUG TRAIN Batch 1/2800 loss 156.983795 loss_att 154.421448 loss_ctc 162.962616 th_accuracy 0.278768 lr 0.00004112 grad_norm 89.111359 rank 0
+2024-02-07 00:48:00,188 DEBUG TRAIN Batch 1/3000 loss 323.108795 loss_att 339.017639 loss_ctc 285.988159 th_accuracy 0.249813 lr 0.00004237 grad_norm 295.745422 rank 0
+2024-02-07 00:48:34,844 DEBUG TRAIN Batch 1/3200 loss 253.745575 loss_att 261.229828 loss_ctc 236.282318 th_accuracy 0.257310 lr 0.00004362 grad_norm 172.766327 rank 0
+2024-02-07 00:49:11,606 DEBUG TRAIN Batch 1/3400 loss 214.730865 loss_att 222.044739 loss_ctc 197.665161 th_accuracy 0.270627 lr 0.00004487 grad_norm 103.827438 rank 0
+2024-02-07 00:49:49,129 DEBUG TRAIN Batch 1/3600 loss 174.819046 loss_att 175.626587 loss_ctc 172.934784 th_accuracy 0.279267 lr 0.00004612 grad_norm 95.487419 rank 0
+2024-02-07 00:50:40,856 DEBUG CV Batch 1/200 loss 366.087341 loss_att 312.706451 loss_ctc 490.642670 th_accuracy 0.242961 
+2024-02-07 00:50:41,254 INFO Epoch 1 CV info lr 4.7249999999999997e-05 cv_loss 225.44610079309163 rank 0 acc 0.2765968397838398
+2024-02-07 00:50:41,255 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1/epoch_1.pt
+2024-02-07 00:50:42,405 INFO Epoch 2 TRAIN info lr 4.7249999999999997e-05 rank 0
+2024-02-07 00:50:42,424 INFO using accumulate grad, new batch size is 4 times larger than before
+2024-02-07 00:51:44,832 DEBUG TRAIN Batch 2/200 loss 272.360779 loss_att 276.103485 loss_ctc 263.627808 th_accuracy 0.274616 lr 0.00004850 grad_norm 174.943405 rank 0
+2024-02-07 00:52:20,352 DEBUG TRAIN Batch 2/400 loss 232.361328 loss_att 237.049896 loss_ctc 221.421371 th_accuracy 0.261603 lr 0.00004975 grad_norm 132.077621 rank 0
+2024-02-07 00:52:57,803 DEBUG TRAIN Batch 2/600 loss 150.099579 loss_att 156.376740 loss_ctc 135.452850 th_accuracy 0.293461 lr 0.00005100 grad_norm 237.772400 rank 0
+2024-02-07 00:53:36,084 DEBUG TRAIN Batch 2/800 loss 124.261421 loss_att 125.180145 loss_ctc 122.117737 th_accuracy 0.275794 lr 0.00005225 grad_norm 79.234756 rank 0
+2024-02-07 00:54:13,985 DEBUG TRAIN Batch 2/1000 loss 288.646149 loss_att 316.014404 loss_ctc 224.786896 th_accuracy 0.261076 lr 0.00005350 grad_norm 196.744263 rank 0
+2024-02-07 00:54:48,032 DEBUG TRAIN Batch 2/1200 loss 254.222961 loss_att 267.416870 loss_ctc 223.437180 th_accuracy 0.289762 lr 0.00005475 grad_norm 125.029831 rank 0
+2024-02-07 00:55:24,556 DEBUG TRAIN Batch 2/1400 loss 208.244324 loss_att 214.186890 loss_ctc 194.378357 th_accuracy 0.287703 lr 0.00005600 grad_norm 117.187981 rank 0
+2024-02-07 00:56:02,400 DEBUG TRAIN Batch 2/1600 loss 179.485260 loss_att 190.567841 loss_ctc 153.625900 th_accuracy 0.278834 lr 0.00005725 grad_norm 126.751694 rank 0
+2024-02-07 00:56:40,135 DEBUG TRAIN Batch 2/1800 loss 115.450302 loss_att 118.812164 loss_ctc 107.605972 th_accuracy 0.268499 lr 0.00005850 grad_norm 92.702614 rank 0
+2024-02-07 00:57:18,317 DEBUG TRAIN Batch 2/2000 loss 287.271088 loss_att 325.763275 loss_ctc 197.456024 th_accuracy 0.255335 lr 0.00005975 grad_norm 163.662537 rank 0
+2024-02-07 00:57:53,107 DEBUG TRAIN Batch 2/2200 loss 252.019714 loss_att 275.152832 loss_ctc 198.042450 th_accuracy 0.289125 lr 0.00006100 grad_norm 182.135132 rank 0
+2024-02-07 00:58:30,039 DEBUG TRAIN Batch 2/2400 loss 209.250046 loss_att 225.644180 loss_ctc 170.997040 th_accuracy 0.270183 lr 0.00006225 grad_norm 119.608551 rank 0
+2024-02-07 00:59:07,751 DEBUG TRAIN Batch 2/2600 loss 176.691956 loss_att 179.400024 loss_ctc 170.373108 th_accuracy 0.326343 lr 0.00006350 grad_norm 145.230301 rank 0
+2024-02-07 00:59:45,689 DEBUG TRAIN Batch 2/2800 loss 108.422424 loss_att 113.181389 loss_ctc 97.318161 th_accuracy 0.314928 lr 0.00006475 grad_norm 90.667427 rank 0
+2024-02-07 01:00:23,558 DEBUG TRAIN Batch 2/3000 loss 272.953033 loss_att 307.274658 loss_ctc 192.869293 th_accuracy 0.301402 lr 0.00006600 grad_norm 271.177399 rank 0
+2024-02-07 01:00:58,602 DEBUG TRAIN Batch 2/3200 loss 225.276428 loss_att 243.956696 loss_ctc 181.689117 th_accuracy 0.308500 lr 0.00006725 grad_norm 192.804611 rank 0
+2024-02-07 01:01:36,028 DEBUG TRAIN Batch 2/3400 loss 234.870300 loss_att 239.138794 loss_ctc 224.910477 th_accuracy 0.311284 lr 0.00006850 grad_norm 139.970673 rank 0
+2024-02-07 01:02:14,081 DEBUG TRAIN Batch 2/3600 loss 162.989868 loss_att 165.750122 loss_ctc 156.549301 th_accuracy 0.299026 lr 0.00006975 grad_norm 140.664948 rank 0
+2024-02-07 01:03:05,499 DEBUG CV Batch 2/200 loss 350.092957 loss_att 312.181946 loss_ctc 438.551941 th_accuracy 0.267096 
+2024-02-07 01:03:05,934 INFO Epoch 2 CV info lr 7.087499999999999e-05 cv_loss 210.79904130062974 rank 0 acc 0.30365329011551384
+2024-02-07 01:03:05,935 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1/epoch_2.pt
+2024-02-07 01:03:07,128 INFO Epoch 3 TRAIN info lr 7.087499999999999e-05 rank 0
+2024-02-07 01:03:07,152 INFO using accumulate grad, new batch size is 4 times larger than before
+2024-02-07 01:04:10,261 DEBUG TRAIN Batch 3/200 loss 230.077591 loss_att 247.659668 loss_ctc 189.052734 th_accuracy 0.334572 lr 0.00007212 grad_norm 179.982330 rank 0
+2024-02-07 01:04:47,386 DEBUG TRAIN Batch 3/400 loss 206.585648 loss_att 212.788101 loss_ctc 192.113251 th_accuracy 0.329876 lr 0.00007337 grad_norm 144.485062 rank 0
+2024-02-07 01:05:25,789 DEBUG TRAIN Batch 3/600 loss 157.856415 loss_att 164.332336 loss_ctc 142.745956 th_accuracy 0.394636 lr 0.00007462 grad_norm 124.140411 rank 0
+2024-02-07 01:06:04,373 DEBUG TRAIN Batch 3/800 loss 105.622185 loss_att 105.749664 loss_ctc 105.324738 th_accuracy 0.415058 lr 0.00007588 grad_norm 135.381973 rank 0
+2024-02-07 01:06:42,534 DEBUG TRAIN Batch 3/1000 loss 239.855042 loss_att 271.656830 loss_ctc 165.650909 th_accuracy 0.320168 lr 0.00007712 grad_norm 227.847672 rank 0
+2024-02-07 01:07:16,894 DEBUG TRAIN Batch 3/1200 loss 183.584595 loss_att 204.808075 loss_ctc 134.063171 th_accuracy 0.376289 lr 0.00007837 grad_norm 194.850098 rank 0
+2024-02-07 01:07:54,001 DEBUG TRAIN Batch 3/1400 loss 190.098892 loss_att 198.831253 loss_ctc 169.723389 th_accuracy 0.400208 lr 0.00007962 grad_norm 147.640411 rank 0
+2024-02-07 01:08:31,496 DEBUG TRAIN Batch 3/1600 loss 140.859146 loss_att 147.065491 loss_ctc 126.377701 th_accuracy 0.434605 lr 0.00008087 grad_norm 180.063538 rank 0
+2024-02-07 01:09:09,358 DEBUG TRAIN Batch 3/1800 loss 114.676842 loss_att 115.560043 loss_ctc 112.616043 th_accuracy 0.421667 lr 0.00008212 grad_norm 120.412430 rank 0
+2024-02-07 01:09:47,928 DEBUG TRAIN Batch 3/2000 loss 229.807541 loss_att 255.379303 loss_ctc 170.140121 th_accuracy 0.375433 lr 0.00008337 grad_norm 259.027405 rank 0
+2024-02-07 01:10:21,952 DEBUG TRAIN Batch 3/2200 loss 182.912003 loss_att 195.597992 loss_ctc 153.311340 th_accuracy 0.449177 lr 0.00008462 grad_norm 204.344498 rank 0
+2024-02-07 01:10:59,123 DEBUG TRAIN Batch 3/2400 loss 154.802505 loss_att 164.789978 loss_ctc 131.498413 th_accuracy 0.445330 lr 0.00008588 grad_norm 186.717819 rank 0
+2024-02-07 01:11:36,176 DEBUG TRAIN Batch 3/2600 loss 159.777252 loss_att 149.618713 loss_ctc 183.480469 th_accuracy 0.447724 lr 0.00008712 grad_norm 171.415344 rank 0
+2024-02-07 01:12:14,843 DEBUG TRAIN Batch 3/2800 loss 100.001419 loss_att 96.731148 loss_ctc 107.632065 th_accuracy 0.492806 lr 0.00008837 grad_norm 148.203278 rank 0
+2024-02-07 01:12:52,239 DEBUG TRAIN Batch 3/3000 loss 226.238708 loss_att 247.874634 loss_ctc 175.754913 th_accuracy 0.428112 lr 0.00008962 grad_norm 259.393951 rank 0
+2024-02-07 01:13:25,746 DEBUG TRAIN Batch 3/3200 loss 171.496216 loss_att 185.385254 loss_ctc 139.088501 th_accuracy 0.482949 lr 0.00009087 grad_norm 204.764282 rank 0
+2024-02-07 01:14:02,161 DEBUG TRAIN Batch 3/3400 loss 154.854446 loss_att 157.843781 loss_ctc 147.879333 th_accuracy 0.492473 lr 0.00009212 grad_norm 211.214600 rank 0
+2024-02-07 01:14:39,170 DEBUG TRAIN Batch 3/3600 loss 130.245178 loss_att 128.448883 loss_ctc 134.436523 th_accuracy 0.503876 lr 0.00009337 grad_norm 177.795074 rank 0
+2024-02-07 01:15:29,328 DEBUG CV Batch 3/200 loss 335.127014 loss_att 289.686096 loss_ctc 441.155762 th_accuracy 0.343524 
+2024-02-07 01:15:29,707 INFO Epoch 3 CV info lr 9.449999999999999e-05 cv_loss 202.32917853689221 rank 0 acc 0.3495224715725889
+2024-02-07 01:15:29,707 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1/epoch_3.pt
+2024-02-07 01:15:30,868 INFO Epoch 4 TRAIN info lr 9.449999999999999e-05 rank 0
+2024-02-07 01:15:30,883 INFO using accumulate grad, new batch size is 4 times larger than before
+2024-02-07 01:16:32,877 DEBUG TRAIN Batch 4/200 loss 145.526184 loss_att 152.708160 loss_ctc 128.768234 th_accuracy 0.552553 lr 0.00009575 grad_norm 169.193024 rank 0
+2024-02-07 01:17:09,211 DEBUG TRAIN Batch 4/400 loss 150.005844 loss_att 143.941452 loss_ctc 164.156097 th_accuracy 0.545259 lr 0.00009700 grad_norm 176.844223 rank 0
+2024-02-07 01:17:46,165 DEBUG TRAIN Batch 4/600 loss 102.436935 loss_att 102.563644 loss_ctc 102.141273 th_accuracy 0.552870 lr 0.00009825 grad_norm 235.311264 rank 0
+2024-02-07 01:18:24,366 DEBUG TRAIN Batch 4/800 loss 73.013351 loss_att 68.300331 loss_ctc 84.010391 th_accuracy 0.588119 lr 0.00009950 grad_norm 168.700989 rank 0
+2024-02-07 01:19:01,781 DEBUG TRAIN Batch 4/1000 loss 186.743591 loss_att 203.818207 loss_ctc 146.902832 th_accuracy 0.526524 lr 0.00010075 grad_norm 213.436935 rank 0
+2024-02-07 01:19:36,021 DEBUG TRAIN Batch 4/1200 loss 147.914978 loss_att 155.506241 loss_ctc 130.201996 th_accuracy 0.556185 lr 0.00010200 grad_norm 320.146515 rank 0
+2024-02-07 01:20:12,918 DEBUG TRAIN Batch 4/1400 loss 139.159836 loss_att 136.699982 loss_ctc 144.899475 th_accuracy 0.613566 lr 0.00010325 grad_norm 196.959412 rank 0
+2024-02-07 01:20:49,887 DEBUG TRAIN Batch 4/1600 loss 150.909119 loss_att 132.132126 loss_ctc 194.722107 th_accuracy 0.565410 lr 0.00010450 grad_norm 167.537018 rank 0
+2024-02-07 01:21:27,293 DEBUG TRAIN Batch 4/1800 loss 66.590675 loss_att 57.181511 loss_ctc 88.545395 th_accuracy 0.663244 lr 0.00010575 grad_norm 187.264679 rank 0
+2024-02-07 01:22:04,812 DEBUG TRAIN Batch 4/2000 loss 182.909637 loss_att 191.647171 loss_ctc 162.522064 th_accuracy 0.541700 lr 0.00010700 grad_norm 381.880524 rank 0
+2024-02-07 01:22:38,845 DEBUG TRAIN Batch 4/2200 loss 145.627396 loss_att 151.408722 loss_ctc 132.137619 th_accuracy 0.570750 lr 0.00010825 grad_norm 402.558044 rank 0
+2024-02-07 01:23:15,154 DEBUG TRAIN Batch 4/2400 loss 154.179779 loss_att 141.989807 loss_ctc 182.623047 th_accuracy 0.606061 lr 0.00010950 grad_norm 350.570160 rank 0
+2024-02-07 01:23:52,728 DEBUG TRAIN Batch 4/2600 loss 101.498985 loss_att 98.245857 loss_ctc 109.089600 th_accuracy 0.596932 lr 0.00011075 grad_norm 351.188141 rank 0
+2024-02-07 01:24:30,691 DEBUG TRAIN Batch 4/2800 loss 78.670532 loss_att 72.169464 loss_ctc 93.839706 th_accuracy 0.599628 lr 0.00011200 grad_norm 193.809769 rank 0
+2024-02-07 01:25:08,569 DEBUG TRAIN Batch 4/3000 loss 164.448181 loss_att 173.082733 loss_ctc 144.300903 th_accuracy 0.607309 lr 0.00011325 grad_norm 475.181793 rank 0
+2024-02-07 01:25:42,004 DEBUG TRAIN Batch 4/3200 loss 138.395996 loss_att 140.408417 loss_ctc 133.700348 th_accuracy 0.630866 lr 0.00011450 grad_norm 361.541107 rank 0
+2024-02-07 01:26:18,181 DEBUG TRAIN Batch 4/3400 loss 107.941177 loss_att 106.912781 loss_ctc 110.340775 th_accuracy 0.648559 lr 0.00011575 grad_norm 246.966141 rank 0
+2024-02-07 01:26:54,800 DEBUG TRAIN Batch 4/3600 loss 103.163490 loss_att 88.026581 loss_ctc 138.482941 th_accuracy 0.687817 lr 0.00011700 grad_norm 327.125244 rank 0
+2024-02-07 01:27:45,532 DEBUG CV Batch 4/200 loss 332.582825 loss_att 293.190430 loss_ctc 424.498474 th_accuracy 0.364441 
+2024-02-07 01:27:45,909 INFO Epoch 4 CV info lr 0.00011812499999999998 cv_loss 193.1155235929029 rank 0 acc 0.40628438869726313
+2024-02-07 01:27:45,910 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1/epoch_4.pt
+2024-02-07 01:27:47,011 INFO Epoch 5 TRAIN info lr 0.00011812499999999998 rank 0
+2024-02-07 01:27:47,032 INFO using accumulate grad, new batch size is 4 times larger than before
+2024-02-07 01:28:50,685 DEBUG TRAIN Batch 5/200 loss 144.988724 loss_att 144.051010 loss_ctc 147.176727 th_accuracy 0.630511 lr 0.00011937 grad_norm 633.126953 rank 0
+2024-02-07 01:29:27,056 DEBUG TRAIN Batch 5/400 loss 112.334076 loss_att 108.831085 loss_ctc 120.507713 th_accuracy 0.649619 lr 0.00012062 grad_norm 259.718231 rank 0
+2024-02-07 01:30:04,350 DEBUG TRAIN Batch 5/600 loss 105.897354 loss_att 86.710236 loss_ctc 150.667313 th_accuracy 0.647552 lr 0.00012187 grad_norm 182.062881 rank 0
+2024-02-07 01:30:42,904 DEBUG TRAIN Batch 5/800 loss 63.011452 loss_att 57.934441 loss_ctc 74.857803 th_accuracy 0.699463 lr 0.00012312 grad_norm 148.098267 rank 0
+2024-02-07 01:31:20,682 DEBUG TRAIN Batch 5/1000 loss 160.892807 loss_att 167.256088 loss_ctc 146.045151 th_accuracy 0.638519 lr 0.00012437 grad_norm 424.075775 rank 0
+2024-02-07 01:31:54,183 DEBUG TRAIN Batch 5/1200 loss 135.567200 loss_att 126.803879 loss_ctc 156.014984 th_accuracy 0.672276 lr 0.00012562 grad_norm 626.896423 rank 0
+2024-02-07 01:32:31,136 DEBUG TRAIN Batch 5/1400 loss 97.816727 loss_att 93.150742 loss_ctc 108.704025 th_accuracy 0.731809 lr 0.00012687 grad_norm 270.939819 rank 0
+2024-02-07 01:33:07,892 DEBUG TRAIN Batch 5/1600 loss 71.428696 loss_att 61.481098 loss_ctc 94.639755 th_accuracy 0.769863 lr 0.00012812 grad_norm 245.775406 rank 0
+2024-02-07 01:33:45,183 DEBUG TRAIN Batch 5/1800 loss 73.543694 loss_att 57.577438 loss_ctc 110.798286 th_accuracy 0.692998 lr 0.00012937 grad_norm 272.930786 rank 0
+2024-02-07 01:34:23,276 DEBUG TRAIN Batch 5/2000 loss 149.746017 loss_att 151.944412 loss_ctc 144.616440 th_accuracy 0.660469 lr 0.00013062 grad_norm 510.427368 rank 0
+2024-02-07 01:34:57,173 DEBUG TRAIN Batch 5/2200 loss 90.519913 loss_att 80.212151 loss_ctc 114.571335 th_accuracy 0.794585 lr 0.00013187 grad_norm 271.578735 rank 0
+2024-02-07 01:35:33,169 DEBUG TRAIN Batch 5/2400 loss 108.252823 loss_att 92.325409 loss_ctc 145.416779 th_accuracy 0.745236 lr 0.00013312 grad_norm 217.167374 rank 0
+2024-02-07 01:36:10,135 DEBUG TRAIN Batch 5/2600 loss 80.685295 loss_att 72.809235 loss_ctc 99.062767 th_accuracy 0.735648 lr 0.00013437 grad_norm 159.039719 rank 0
+2024-02-07 01:36:47,853 DEBUG TRAIN Batch 5/2800 loss 48.505589 loss_att 40.562424 loss_ctc 67.039642 th_accuracy 0.781676 lr 0.00013562 grad_norm 157.124680 rank 0
+2024-02-07 01:37:25,897 DEBUG TRAIN Batch 5/3000 loss 107.035210 loss_att 109.414688 loss_ctc 101.483093 th_accuracy 0.763608 lr 0.00013687 grad_norm 364.411865 rank 0
+2024-02-07 01:37:59,738 DEBUG TRAIN Batch 5/3200 loss 92.188072 loss_att 82.978867 loss_ctc 113.676216 th_accuracy 0.798422 lr 0.00013812 grad_norm 204.734528 rank 0
+2024-02-07 01:38:36,448 DEBUG TRAIN Batch 5/3400 loss 93.898766 loss_att 80.646675 loss_ctc 124.820305 th_accuracy 0.755605 lr 0.00013937 grad_norm 222.957001 rank 0
+2024-02-07 01:39:13,968 DEBUG TRAIN Batch 5/3600 loss 78.501434 loss_att 62.961655 loss_ctc 114.760918 th_accuracy 0.764323 lr 0.00014062 grad_norm 148.678802 rank 0
+2024-02-07 01:40:05,051 DEBUG CV Batch 5/200 loss 299.454834 loss_att 254.806183 loss_ctc 403.635040 th_accuracy 0.437651 
+2024-02-07 01:40:05,425 INFO Epoch 5 CV info lr 0.00014174999999999998 cv_loss 164.85211133170435 rank 0 acc 0.5165137263756354
+2024-02-07 01:40:05,426 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1/epoch_5.pt
+2024-02-07 01:40:06,594 INFO Epoch 6 TRAIN info lr 0.00014174999999999998 rank 0
+2024-02-07 01:40:06,615 INFO using accumulate grad, new batch size is 4 times larger than before
+2024-02-07 01:41:09,639 DEBUG TRAIN Batch 6/200 loss 107.174271 loss_att 90.317017 loss_ctc 146.507858 th_accuracy 0.804348 lr 0.00014300 grad_norm 223.639206 rank 0
+2024-02-07 01:41:45,106 DEBUG TRAIN Batch 6/400 loss 83.230148 loss_att 67.600700 loss_ctc 119.698868 th_accuracy 0.828543 lr 0.00014425 grad_norm 137.116852 rank 0
+2024-02-07 01:42:22,408 DEBUG TRAIN Batch 6/600 loss 71.792091 loss_att 56.846001 loss_ctc 106.666313 th_accuracy 0.793673 lr 0.00014550 grad_norm 213.029556 rank 0
+2024-02-07 01:43:01,100 DEBUG TRAIN Batch 6/800 loss 42.451530 loss_att 34.986565 loss_ctc 59.869789 th_accuracy 0.815789 lr 0.00014675 grad_norm 127.737480 rank 0
+2024-02-07 01:43:39,275 DEBUG TRAIN Batch 6/1000 loss 90.986290 loss_att 86.907661 loss_ctc 100.503082 th_accuracy 0.821759 lr 0.00014800 grad_norm 410.864044 rank 0
+2024-02-07 01:44:13,892 DEBUG TRAIN Batch 6/1200 loss 72.397461 loss_att 64.324944 loss_ctc 91.233337 th_accuracy 0.845389 lr 0.00014925 grad_norm 166.546448 rank 0
+2024-02-07 01:44:51,109 DEBUG TRAIN Batch 6/1400 loss 59.932068 loss_att 51.449471 loss_ctc 79.724785 th_accuracy 0.854482 lr 0.00015050 grad_norm 161.995178 rank 0
+2024-02-07 01:45:28,104 DEBUG TRAIN Batch 6/1600 loss 69.618896 loss_att 57.395813 loss_ctc 98.139435 th_accuracy 0.799751 lr 0.00015175 grad_norm 137.246201 rank 0
+2024-02-07 01:46:07,609 DEBUG TRAIN Batch 6/1800 loss 45.682945 loss_att 38.517479 loss_ctc 62.402370 th_accuracy 0.823729 lr 0.00015300 grad_norm 96.867447 rank 0
+2024-02-07 01:46:46,894 DEBUG TRAIN Batch 6/2000 loss 102.429443 loss_att 100.840210 loss_ctc 106.137680 th_accuracy 0.802920 lr 0.00015425 grad_norm 281.707886 rank 0
+2024-02-07 01:47:21,039 DEBUG TRAIN Batch 6/2200 loss 68.212601 loss_att 57.673729 loss_ctc 92.803314 th_accuracy 0.833509 lr 0.00015550 grad_norm 200.580338 rank 0
+2024-02-07 01:47:59,341 DEBUG TRAIN Batch 6/2400 loss 90.505112 loss_att 78.389648 loss_ctc 118.774536 th_accuracy 0.765445 lr 0.00015675 grad_norm 271.522186 rank 0
+2024-02-07 01:48:37,190 DEBUG TRAIN Batch 6/2600 loss 45.380474 loss_att 36.338253 loss_ctc 66.478989 th_accuracy 0.887742 lr 0.00015800 grad_norm 122.939766 rank 0
+2024-02-07 01:49:16,218 DEBUG TRAIN Batch 6/2800 loss 49.675568 loss_att 37.991631 loss_ctc 76.938095 th_accuracy 0.811644 lr 0.00015925 grad_norm 103.124084 rank 0
+2024-02-07 01:49:55,650 DEBUG TRAIN Batch 6/3000 loss 81.959724 loss_att 80.485703 loss_ctc 85.399109 th_accuracy 0.825787 lr 0.00016050 grad_norm 256.686646 rank 0
+2024-02-07 01:50:31,061 DEBUG TRAIN Batch 6/3200 loss 71.899628 loss_att 64.186882 loss_ctc 89.896042 th_accuracy 0.847443 lr 0.00016175 grad_norm 148.012756 rank 0
+2024-02-07 01:51:08,394 DEBUG TRAIN Batch 6/3400 loss 77.110474 loss_att 60.368671 loss_ctc 116.174683 th_accuracy 0.823834 lr 0.00016300 grad_norm 151.295502 rank 0
+2024-02-07 01:51:46,970 DEBUG TRAIN Batch 6/3600 loss 70.650475 loss_att 51.830566 loss_ctc 114.563591 th_accuracy 0.812098 lr 0.00016425 grad_norm 117.254997 rank 0
+2024-02-07 01:52:40,112 DEBUG CV Batch 6/200 loss 314.531189 loss_att 283.435486 loss_ctc 387.087860 th_accuracy 0.411907 
+2024-02-07 01:52:40,514 INFO Epoch 6 CV info lr 0.000165375 cv_loss 176.32380326724882 rank 0 acc 0.489124929731332
+2024-02-07 01:52:40,515 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1/epoch_6.pt
+2024-02-07 01:52:41,613 INFO Epoch 7 TRAIN info lr 0.000165375 rank 0
+2024-02-07 01:52:41,629 INFO using accumulate grad, new batch size is 4 times larger than before
+2024-02-07 01:53:44,788 DEBUG TRAIN Batch 7/200 loss 76.527657 loss_att 66.000153 loss_ctc 101.091827 th_accuracy 0.822430 lr 0.00016662 grad_norm 168.855316 rank 0
+2024-02-07 01:54:21,665 DEBUG TRAIN Batch 7/400 loss 66.978592 loss_att 50.398148 loss_ctc 105.666306 th_accuracy 0.856844 lr 0.00016788 grad_norm 124.753578 rank 0
+2024-02-07 01:55:00,507 DEBUG TRAIN Batch 7/600 loss 52.299183 loss_att 34.665932 loss_ctc 93.443436 th_accuracy 0.862606 lr 0.00016913 grad_norm 98.843338 rank 0
+2024-02-07 01:55:38,862 DEBUG TRAIN Batch 7/800 loss 41.335724 loss_att 30.050545 loss_ctc 67.667809 th_accuracy 0.866319 lr 0.00017038 grad_norm 89.090065 rank 0
+2024-02-07 01:56:19,548 DEBUG TRAIN Batch 7/1000 loss 78.780457 loss_att 73.223434 loss_ctc 91.746826 th_accuracy 0.851740 lr 0.00017162 grad_norm 300.224670 rank 0
+2024-02-07 01:56:55,119 DEBUG TRAIN Batch 7/1200 loss 74.906738 loss_att 58.914043 loss_ctc 112.223038 th_accuracy 0.848628 lr 0.00017287 grad_norm 127.143349 rank 0
+2024-02-07 01:57:32,485 DEBUG TRAIN Batch 7/1400 loss 58.761513 loss_att 45.007996 loss_ctc 90.853058 th_accuracy 0.871932 lr 0.00017412 grad_norm 114.884285 rank 0
+2024-02-07 01:58:12,067 DEBUG TRAIN Batch 7/1600 loss 45.917336 loss_att 37.439552 loss_ctc 65.698837 th_accuracy 0.867439 lr 0.00017537 grad_norm 90.412140 rank 0
+2024-02-07 01:58:50,952 DEBUG TRAIN Batch 7/1800 loss 29.927198 loss_att 24.702797 loss_ctc 42.117466 th_accuracy 0.841860 lr 0.00017662 grad_norm 136.615479 rank 0
+2024-02-07 01:59:31,288 DEBUG TRAIN Batch 7/2000 loss 69.297211 loss_att 64.392662 loss_ctc 80.741165 th_accuracy 0.862884 lr 0.00017787 grad_norm 173.237961 rank 0
+2024-02-07 02:00:06,429 DEBUG TRAIN Batch 7/2200 loss 56.712353 loss_att 45.617741 loss_ctc 82.599777 th_accuracy 0.873900 lr 0.00017912 grad_norm 131.108505 rank 0
+2024-02-07 02:00:45,262 DEBUG TRAIN Batch 7/2400 loss 49.867474 loss_att 40.542969 loss_ctc 71.624649 th_accuracy 0.887202 lr 0.00018037 grad_norm 112.086487 rank 0
+2024-02-07 02:01:24,023 DEBUG TRAIN Batch 7/2600 loss 65.041817 loss_att 53.481895 loss_ctc 92.014977 th_accuracy 0.798460 lr 0.00018162 grad_norm 102.044502 rank 0
+2024-02-07 02:02:03,723 DEBUG TRAIN Batch 7/2800 loss 48.166534 loss_att 37.238327 loss_ctc 73.665688 th_accuracy 0.826855 lr 0.00018287 grad_norm 108.189735 rank 0
+2024-02-07 02:02:43,194 DEBUG TRAIN Batch 7/3000 loss 58.075199 loss_att 53.579224 loss_ctc 68.565811 th_accuracy 0.898330 lr 0.00018412 grad_norm 140.748428 rank 0
+2024-02-07 02:03:18,213 DEBUG TRAIN Batch 7/3200 loss 49.440346 loss_att 38.410988 loss_ctc 75.175514 th_accuracy 0.897716 lr 0.00018537 grad_norm 99.145264 rank 0
+2024-02-07 02:03:56,583 DEBUG TRAIN Batch 7/3400 loss 68.714417 loss_att 48.111595 loss_ctc 116.787682 th_accuracy 0.855277 lr 0.00018662 grad_norm 91.778885 rank 0
+2024-02-07 02:04:35,763 DEBUG TRAIN Batch 7/3600 loss 51.875778 loss_att 37.963852 loss_ctc 84.336929 th_accuracy 0.867809 lr 0.00018787 grad_norm 112.663231 rank 0
+2024-02-07 02:05:28,759 DEBUG CV Batch 7/200 loss 288.208740 loss_att 248.081802 loss_ctc 381.838287 th_accuracy 0.464200 
+2024-02-07 02:05:29,149 INFO Epoch 7 CV info lr 0.00018899999999999999 cv_loss 150.77295387934532 rank 0 acc 0.5748931659946164
+2024-02-07 02:05:29,149 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1/epoch_7.pt
+2024-02-07 02:05:30,163 INFO Epoch 8 TRAIN info lr 0.00018899999999999999 rank 0
+2024-02-07 02:05:30,180 INFO using accumulate grad, new batch size is 4 times larger than before
+2024-02-07 02:06:34,263 DEBUG TRAIN Batch 8/200 loss 50.534897 loss_att 40.303474 loss_ctc 74.408211 th_accuracy 0.903256 lr 0.00019025 grad_norm 103.052544 rank 0
+2024-02-07 02:07:12,668 DEBUG TRAIN Batch 8/400 loss 61.845612 loss_att 48.276123 loss_ctc 93.507759 th_accuracy 0.870428 lr 0.00019150 grad_norm 124.661873 rank 0
+2024-02-07 02:07:52,308 DEBUG TRAIN Batch 8/600 loss 59.839874 loss_att 42.847855 loss_ctc 99.487923 th_accuracy 0.829268 lr 0.00019275 grad_norm 97.761429 rank 0
+2024-02-07 02:08:32,661 DEBUG TRAIN Batch 8/800 loss 42.621948 loss_att 31.483570 loss_ctc 68.611496 th_accuracy 0.840426 lr 0.00019400 grad_norm 75.688004 rank 0
+2024-02-07 02:09:13,214 DEBUG TRAIN Batch 8/1000 loss 54.963760 loss_att 49.058895 loss_ctc 68.741791 th_accuracy 0.894215 lr 0.00019525 grad_norm 150.027344 rank 0
+2024-02-07 02:09:48,387 DEBUG TRAIN Batch 8/1200 loss 49.387608 loss_att 41.347965 loss_ctc 68.146774 th_accuracy 0.893238 lr 0.00019650 grad_norm 106.757233 rank 0
+2024-02-07 02:10:26,854 DEBUG TRAIN Batch 8/1400 loss 44.398849 loss_att 33.988426 loss_ctc 68.689827 th_accuracy 0.911017 lr 0.00019775 grad_norm 96.452354 rank 0
+2024-02-07 02:11:05,664 DEBUG TRAIN Batch 8/1600 loss 53.144222 loss_att 40.478928 loss_ctc 82.696571 th_accuracy 0.860131 lr 0.00019900 grad_norm 85.622101 rank 0
+2024-02-07 02:11:46,356 DEBUG TRAIN Batch 8/1800 loss 34.007858 loss_att 25.636517 loss_ctc 53.540993 th_accuracy 0.845850 lr 0.00020025 grad_norm 76.532196 rank 0
+2024-02-07 02:12:26,389 DEBUG TRAIN Batch 8/2000 loss 64.217445 loss_att 58.504795 loss_ctc 77.546951 th_accuracy 0.882264 lr 0.00020150 grad_norm 146.502945 rank 0
+2024-02-07 02:13:01,769 DEBUG TRAIN Batch 8/2200 loss 52.305901 loss_att 40.479736 loss_ctc 79.900276 th_accuracy 0.893813 lr 0.00020275 grad_norm 142.814072 rank 0
+2024-02-07 02:13:40,662 DEBUG TRAIN Batch 8/2400 loss 46.493568 loss_att 33.703964 loss_ctc 76.335976 th_accuracy 0.899401 lr 0.00020400 grad_norm 109.625565 rank 0
+2024-02-07 02:14:19,217 DEBUG TRAIN Batch 8/2600 loss 59.548302 loss_att 42.901245 loss_ctc 98.391434 th_accuracy 0.828532 lr 0.00020525 grad_norm 78.706024 rank 0
+2024-02-07 02:14:59,446 DEBUG TRAIN Batch 8/2800 loss 46.150505 loss_att 31.929276 loss_ctc 79.333366 th_accuracy 0.851211 lr 0.00020650 grad_norm 114.826309 rank 0
+2024-02-07 02:15:40,052 DEBUG TRAIN Batch 8/3000 loss 77.129372 loss_att 72.147537 loss_ctc 88.753639 th_accuracy 0.856924 lr 0.00020775 grad_norm 147.368423 rank 0
+2024-02-07 02:16:15,493 DEBUG TRAIN Batch 8/3200 loss 57.666893 loss_att 45.965942 loss_ctc 84.969101 th_accuracy 0.876251 lr 0.00020900 grad_norm 95.737503 rank 0
+2024-02-07 02:16:53,324 DEBUG TRAIN Batch 8/3400 loss 45.806255 loss_att 36.901756 loss_ctc 66.583420 th_accuracy 0.895789 lr 0.00021025 grad_norm 91.353165 rank 0
+2024-02-07 02:17:33,109 DEBUG TRAIN Batch 8/3600 loss 46.470760 loss_att 29.610325 loss_ctc 85.811775 th_accuracy 0.902256 lr 0.00021150 grad_norm 80.585175 rank 0
+2024-02-07 02:18:26,451 DEBUG CV Batch 8/200 loss 298.199188 loss_att 247.813904 loss_ctc 415.764893 th_accuracy 0.474658 
+2024-02-07 02:18:26,853 INFO Epoch 8 CV info lr 0.000212625 cv_loss 162.28728493030434 rank 0 acc 0.5479013723077126
+2024-02-07 02:18:26,854 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1/epoch_8.pt
+2024-02-07 02:18:27,937 INFO Epoch 9 TRAIN info lr 0.000212625 rank 0
+2024-02-07 02:18:27,960 INFO using accumulate grad, new batch size is 4 times larger than before
+2024-02-07 02:19:31,777 DEBUG TRAIN Batch 9/200 loss 58.892952 loss_att 46.721626 loss_ctc 87.292702 th_accuracy 0.876995 lr 0.00021387 grad_norm 95.352264 rank 0
+2024-02-07 02:20:10,451 DEBUG TRAIN Batch 9/400 loss 46.957630 loss_att 38.421322 loss_ctc 66.875687 th_accuracy 0.872491 lr 0.00021512 grad_norm 99.782990 rank 0
+2024-02-07 02:20:49,156 DEBUG TRAIN Batch 9/600 loss 46.440109 loss_att 29.716436 loss_ctc 85.461998 th_accuracy 0.897269 lr 0.00021637 grad_norm 76.521515 rank 0
+2024-02-07 02:21:28,244 DEBUG TRAIN Batch 9/800 loss 20.690807 loss_att 14.601689 loss_ctc 34.898743 th_accuracy 0.918750 lr 0.00021762 grad_norm 61.421131 rank 0
+2024-02-07 02:22:08,715 DEBUG TRAIN Batch 9/1000 loss 45.495018 loss_att 37.788601 loss_ctc 63.476646 th_accuracy 0.920128 lr 0.00021887 grad_norm 131.051605 rank 0
+2024-02-07 02:22:44,019 DEBUG TRAIN Batch 9/1200 loss 45.576698 loss_att 34.333214 loss_ctc 71.811493 th_accuracy 0.916667 lr 0.00022012 grad_norm 97.700432 rank 0
+2024-02-07 02:23:22,792 DEBUG TRAIN Batch 9/1400 loss 47.252083 loss_att 36.994240 loss_ctc 71.187042 th_accuracy 0.886814 lr 0.00022137 grad_norm 74.951950 rank 0
+2024-02-07 02:24:02,179 DEBUG TRAIN Batch 9/1600 loss 54.642616 loss_att 36.461617 loss_ctc 97.064957 th_accuracy 0.876084 lr 0.00022262 grad_norm 81.628571 rank 0
+2024-02-07 02:24:41,867 DEBUG TRAIN Batch 9/1800 loss 25.161861 loss_att 20.202103 loss_ctc 36.734634 th_accuracy 0.901670 lr 0.00022387 grad_norm 69.408035 rank 0
+2024-02-07 02:25:22,077 DEBUG TRAIN Batch 9/2000 loss 52.777306 loss_att 45.471596 loss_ctc 69.823959 th_accuracy 0.901281 lr 0.00022512 grad_norm 135.930267 rank 0
+2024-02-07 02:25:57,073 DEBUG TRAIN Batch 9/2200 loss 48.330299 loss_att 36.406406 loss_ctc 76.152710 th_accuracy 0.907169 lr 0.00022637 grad_norm 97.578041 rank 0
+2024-02-07 02:26:35,118 DEBUG TRAIN Batch 9/2400 loss 67.010796 loss_att 47.258606 loss_ctc 113.099228 th_accuracy 0.873757 lr 0.00022762 grad_norm 88.018967 rank 0
+2024-02-07 02:27:13,501 DEBUG TRAIN Batch 9/2600 loss 43.275951 loss_att 33.629494 loss_ctc 65.784348 th_accuracy 0.868347 lr 0.00022887 grad_norm 88.688774 rank 0
+2024-02-07 02:27:54,339 DEBUG TRAIN Batch 9/2800 loss 37.724258 loss_att 28.776459 loss_ctc 58.602455 th_accuracy 0.845857 lr 0.00023012 grad_norm 67.997292 rank 0
+2024-02-07 02:28:34,386 DEBUG TRAIN Batch 9/3000 loss 45.330097 loss_att 39.882290 loss_ctc 58.041649 th_accuracy 0.916466 lr 0.00023137 grad_norm 132.891983 rank 0
+2024-02-07 02:29:09,078 DEBUG TRAIN Batch 9/3200 loss 38.754204 loss_att 29.650143 loss_ctc 59.997013 th_accuracy 0.926743 lr 0.00023263 grad_norm 84.533524 rank 0
+2024-02-07 02:29:47,045 DEBUG TRAIN Batch 9/3400 loss 34.445869 loss_att 23.366838 loss_ctc 60.296944 th_accuracy 0.926748 lr 0.00023388 grad_norm 83.610329 rank 0
+2024-02-07 02:30:25,332 DEBUG TRAIN Batch 9/3600 loss 32.911167 loss_att 26.287239 loss_ctc 48.366997 th_accuracy 0.900838 lr 0.00023512 grad_norm 73.132675 rank 0
+2024-02-07 02:31:17,861 DEBUG CV Batch 9/200 loss 312.833740 loss_att 260.140533 loss_ctc 435.784485 th_accuracy 0.446500 
+2024-02-07 02:31:18,369 INFO Epoch 9 CV info lr 0.00023624999999999997 cv_loss 173.64948740162788 rank 0 acc 0.5203927386443592
+2024-02-07 02:31:18,370 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1/epoch_9.pt
+2024-02-07 02:31:20,596 INFO Epoch 10 TRAIN info lr 0.00023624999999999997 rank 0
+2024-02-07 02:31:20,619 INFO using accumulate grad, new batch size is 4 times larger than before
+2024-02-07 02:32:23,894 DEBUG TRAIN Batch 10/200 loss 41.334461 loss_att 29.074766 loss_ctc 69.940414 th_accuracy 0.939531 lr 0.00023750 grad_norm 85.246170 rank 0
+2024-02-07 02:33:01,760 DEBUG TRAIN Batch 10/400 loss 85.492630 loss_att 54.500305 loss_ctc 157.808044 th_accuracy 0.869763 lr 0.00023875 grad_norm 111.237228 rank 0
+2024-02-07 02:33:41,278 DEBUG TRAIN Batch 10/600 loss 35.159481 loss_att 26.865868 loss_ctc 54.511246 th_accuracy 0.892458 lr 0.00024000 grad_norm 98.562347 rank 0
+2024-02-07 02:34:21,528 DEBUG TRAIN Batch 10/800 loss 33.241993 loss_att 25.797825 loss_ctc 50.611717 th_accuracy 0.870438 lr 0.00024125 grad_norm 70.232048 rank 0
+2024-02-07 02:35:00,876 DEBUG TRAIN Batch 10/1000 loss 49.071335 loss_att 41.133362 loss_ctc 67.593269 th_accuracy 0.921114 lr 0.00024250 grad_norm 110.644058 rank 0
+2024-02-07 02:35:36,410 DEBUG TRAIN Batch 10/1200 loss 36.377041 loss_att 29.186068 loss_ctc 53.155975 th_accuracy 0.933273 lr 0.00024375 grad_norm 101.673538 rank 0
+2024-02-07 02:36:14,548 DEBUG TRAIN Batch 10/1400 loss 37.185783 loss_att 28.955471 loss_ctc 56.389847 th_accuracy 0.901914 lr 0.00024500 grad_norm 76.719559 rank 0
+2024-02-07 02:36:53,861 DEBUG TRAIN Batch 10/1600 loss 42.098049 loss_att 22.388653 loss_ctc 88.086639 th_accuracy 0.925337 lr 0.00024625 grad_norm 71.668915 rank 0
+2024-02-07 02:37:33,739 DEBUG TRAIN Batch 10/1800 loss 27.138796 loss_att 20.230524 loss_ctc 43.258095 th_accuracy 0.903226 lr 0.00024750 grad_norm 51.400822 rank 0
+2024-02-07 02:38:13,961 DEBUG TRAIN Batch 10/2000 loss 42.858398 loss_att 33.848377 loss_ctc 63.881790 th_accuracy 0.929825 lr 0.00024875 grad_norm 101.292221 rank 0
+2024-02-07 02:38:48,959 DEBUG TRAIN Batch 10/2200 loss 46.680382 loss_att 37.559288 loss_ctc 67.962936 th_accuracy 0.904412 lr 0.00025000 grad_norm 73.747993 rank 0
+2024-02-07 02:39:26,376 DEBUG TRAIN Batch 10/2400 loss 22.974579 loss_att 17.708710 loss_ctc 35.261604 th_accuracy 0.957425 lr 0.00025125 grad_norm 75.314003 rank 0
+2024-02-07 02:40:05,514 DEBUG TRAIN Batch 10/2600 loss 37.304493 loss_att 24.112461 loss_ctc 68.085899 th_accuracy 0.905947 lr 0.00025250 grad_norm 66.476212 rank 0
+2024-02-07 02:40:45,324 DEBUG TRAIN Batch 10/2800 loss 41.525246 loss_att 32.012383 loss_ctc 63.721920 th_accuracy 0.839640 lr 0.00025375 grad_norm 67.367119 rank 0
+2024-02-07 02:41:24,044 DEBUG TRAIN Batch 10/3000 loss 52.567024 loss_att 44.070206 loss_ctc 72.392929 th_accuracy 0.904163 lr 0.00025500 grad_norm 124.660027 rank 0
+2024-02-07 02:41:58,365 DEBUG TRAIN Batch 10/3200 loss 36.538948 loss_att 28.500479 loss_ctc 55.295368 th_accuracy 0.941851 lr 0.00025625 grad_norm 122.167389 rank 0
+2024-02-07 02:42:36,901 DEBUG TRAIN Batch 10/3400 loss 36.251137 loss_att 24.548893 loss_ctc 63.556374 th_accuracy 0.934899 lr 0.00025750 grad_norm 93.169449 rank 0
+2024-02-07 02:43:16,339 DEBUG TRAIN Batch 10/3600 loss 33.899010 loss_att 27.219849 loss_ctc 49.483723 th_accuracy 0.902689 lr 0.00025875 grad_norm 77.069649 rank 0
+2024-02-07 02:44:09,223 DEBUG CV Batch 10/200 loss 267.309753 loss_att 213.387451 loss_ctc 393.128418 th_accuracy 0.543846 
+2024-02-07 02:44:09,640 INFO Epoch 10 CV info lr 0.00025987499999999996 cv_loss 145.5369781512783 rank 0 acc 0.6089491326253391
+2024-02-07 02:44:09,641 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1/epoch_10.pt
+2024-02-07 02:44:10,963 INFO Epoch 11 TRAIN info lr 0.00025987499999999996 rank 0
+2024-02-07 02:44:10,984 INFO using accumulate grad, new batch size is 4 times larger than before
+2024-02-07 02:45:14,107 DEBUG TRAIN Batch 11/200 loss 33.433903 loss_att 25.710312 loss_ctc 51.455612 th_accuracy 0.937207 lr 0.00026112 grad_norm 82.447495 rank 0
+2024-02-07 02:45:51,898 DEBUG TRAIN Batch 11/400 loss 53.559799 loss_att 39.959930 loss_ctc 85.292831 th_accuracy 0.878173 lr 0.00026237 grad_norm 83.364983 rank 0
+2024-02-07 02:46:29,717 DEBUG TRAIN Batch 11/600 loss 41.751263 loss_att 31.268829 loss_ctc 66.210274 th_accuracy 0.874471 lr 0.00026362 grad_norm 80.223602 rank 0
+2024-02-07 02:47:08,426 DEBUG TRAIN Batch 11/800 loss 15.454750 loss_att 10.976165 loss_ctc 25.904779 th_accuracy 0.952548 lr 0.00026487 grad_norm 52.652008 rank 0
+2024-02-07 02:47:48,637 DEBUG TRAIN Batch 11/1000 loss 29.628281 loss_att 24.200480 loss_ctc 42.293144 th_accuracy 0.949111 lr 0.00026612 grad_norm 121.004631 rank 0
+2024-02-07 02:48:24,412 DEBUG TRAIN Batch 11/1200 loss 23.627857 loss_att 19.234619 loss_ctc 33.878742 th_accuracy 0.947368 lr 0.00026737 grad_norm 85.889252 rank 0
+2024-02-07 02:49:03,552 DEBUG TRAIN Batch 11/1400 loss 25.612406 loss_att 15.324977 loss_ctc 49.616405 th_accuracy 0.941392 lr 0.00026862 grad_norm 83.353233 rank 0
+2024-02-07 02:49:42,777 DEBUG TRAIN Batch 11/1600 loss 31.033791 loss_att 21.736826 loss_ctc 52.726704 th_accuracy 0.914923 lr 0.00026987 grad_norm 63.521339 rank 0
+2024-02-07 02:50:22,451 DEBUG TRAIN Batch 11/1800 loss 19.625401 loss_att 12.575247 loss_ctc 36.075764 th_accuracy 0.933594 lr 0.00027112 grad_norm 56.838638 rank 0
+2024-02-07 02:51:01,538 DEBUG TRAIN Batch 11/2000 loss 37.348198 loss_att 28.964825 loss_ctc 56.909393 th_accuracy 0.935615 lr 0.00027237 grad_norm 97.116547 rank 0
+2024-02-07 02:51:36,541 DEBUG TRAIN Batch 11/2200 loss 44.599220 loss_att 35.687592 loss_ctc 65.393021 th_accuracy 0.899152 lr 0.00027362 grad_norm 88.551353 rank 0
+2024-02-07 02:52:14,715 DEBUG TRAIN Batch 11/2400 loss 41.774040 loss_att 25.817284 loss_ctc 79.006470 th_accuracy 0.929006 lr 0.00027487 grad_norm 87.427872 rank 0
+2024-02-07 02:52:54,240 DEBUG TRAIN Batch 11/2600 loss 56.930317 loss_att 32.731209 loss_ctc 113.394897 th_accuracy 0.894425 lr 0.00027613 grad_norm 66.338043 rank 0
+2024-02-07 02:53:33,951 DEBUG TRAIN Batch 11/2800 loss 27.271984 loss_att 21.012318 loss_ctc 41.877869 th_accuracy 0.883239 lr 0.00027737 grad_norm 58.431660 rank 0
+2024-02-07 02:54:13,836 DEBUG TRAIN Batch 11/3000 loss 32.045815 loss_att 27.235695 loss_ctc 43.269424 th_accuracy 0.937549 lr 0.00027863 grad_norm 90.968422 rank 0
+2024-02-07 02:54:49,004 DEBUG TRAIN Batch 11/3200 loss 35.680126 loss_att 27.117537 loss_ctc 55.659500 th_accuracy 0.922727 lr 0.00027987 grad_norm 83.183914 rank 0
+2024-02-07 02:55:27,682 DEBUG TRAIN Batch 11/3400 loss 36.156212 loss_att 21.738344 loss_ctc 69.797897 th_accuracy 0.942015 lr 0.00028113 grad_norm 64.631363 rank 0
+2024-02-07 02:56:07,042 DEBUG TRAIN Batch 11/3600 loss 36.316200 loss_att 23.848316 loss_ctc 65.407928 th_accuracy 0.933254 lr 0.00028237 grad_norm 64.146515 rank 0
+2024-02-07 02:57:00,493 DEBUG CV Batch 11/200 loss 276.584351 loss_att 224.136139 loss_ctc 398.963501 th_accuracy 0.507643 
+2024-02-07 02:57:00,903 INFO Epoch 11 CV info lr 0.00028349999999999995 cv_loss 154.2107983346239 rank 0 acc 0.562837476145874
+2024-02-07 02:57:00,904 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1/epoch_11.pt
+2024-02-07 02:57:02,120 INFO Epoch 12 TRAIN info lr 0.00028349999999999995 rank 0
+2024-02-07 02:57:02,140 INFO using accumulate grad, new batch size is 4 times larger than before
+2024-02-07 02:58:06,675 DEBUG TRAIN Batch 12/200 loss 35.322121 loss_att 24.002802 loss_ctc 61.733868 th_accuracy 0.938020 lr 0.00028475 grad_norm 85.807266 rank 0
+2024-02-07 02:58:44,158 DEBUG TRAIN Batch 12/400 loss 40.737297 loss_att 30.787598 loss_ctc 63.953266 th_accuracy 0.903037 lr 0.00028600 grad_norm 88.668877 rank 0
+2024-02-07 02:59:21,928 DEBUG TRAIN Batch 12/600 loss 25.458935 loss_att 19.512020 loss_ctc 39.335064 th_accuracy 0.925770 lr 0.00028725 grad_norm 72.492538 rank 0
+2024-02-07 03:00:01,218 DEBUG TRAIN Batch 12/800 loss 19.000355 loss_att 14.801678 loss_ctc 28.797264 th_accuracy 0.926874 lr 0.00028850 grad_norm 56.015697 rank 0
+2024-02-07 03:00:41,278 DEBUG TRAIN Batch 12/1000 loss 30.365875 loss_att 26.375648 loss_ctc 39.676403 th_accuracy 0.942429 lr 0.00028975 grad_norm 84.260162 rank 0
+2024-02-07 03:01:15,503 DEBUG TRAIN Batch 12/1200 loss 43.383942 loss_att 28.682228 loss_ctc 77.687943 th_accuracy 0.926763 lr 0.00029100 grad_norm 73.904915 rank 0
+2024-02-07 03:01:54,796 DEBUG TRAIN Batch 12/1400 loss 16.379028 loss_att 12.757535 loss_ctc 24.829178 th_accuracy 0.959732 lr 0.00029225 grad_norm 70.228760 rank 0
+2024-02-07 03:02:33,860 DEBUG TRAIN Batch 12/1600 loss 20.157366 loss_att 11.310001 loss_ctc 40.801216 th_accuracy 0.957333 lr 0.00029350 grad_norm 56.974476 rank 0
+2024-02-07 03:03:14,970 DEBUG TRAIN Batch 12/1800 loss 20.381006 loss_att 14.662109 loss_ctc 33.725098 th_accuracy 0.926230 lr 0.00029475 grad_norm 52.886627 rank 0
+2024-02-07 03:03:55,029 DEBUG TRAIN Batch 12/2000 loss 49.489845 loss_att 39.917824 loss_ctc 71.824554 th_accuracy 0.917362 lr 0.00029600 grad_norm 93.153740 rank 0
+2024-02-07 03:04:30,578 DEBUG TRAIN Batch 12/2200 loss 45.186806 loss_att 35.667629 loss_ctc 67.398216 th_accuracy 0.917563 lr 0.00029725 grad_norm 74.673988 rank 0
+2024-02-07 03:05:08,331 DEBUG TRAIN Batch 12/2400 loss 29.358044 loss_att 21.786276 loss_ctc 47.025501 th_accuracy 0.931264 lr 0.00029850 grad_norm 68.325241 rank 0
+2024-02-07 03:05:47,586 DEBUG TRAIN Batch 12/2600 loss 22.654280 loss_att 16.151382 loss_ctc 37.827705 th_accuracy 0.940845 lr 0.00029975 grad_norm 75.397957 rank 0
+2024-02-07 03:06:27,145 DEBUG TRAIN Batch 12/2800 loss 15.466941 loss_att 11.173136 loss_ctc 25.485819 th_accuracy 0.934990 lr 0.00030100 grad_norm 60.814373 rank 0
+2024-02-07 03:07:06,892 DEBUG TRAIN Batch 12/3000 loss 43.900681 loss_att 34.287376 loss_ctc 66.331726 th_accuracy 0.925626 lr 0.00030225 grad_norm 91.559288 rank 0
+2024-02-07 03:07:42,454 DEBUG TRAIN Batch 12/3200 loss 27.646450 loss_att 18.312698 loss_ctc 49.425201 th_accuracy 0.949904 lr 0.00030350 grad_norm 71.154144 rank 0
+2024-02-07 03:08:20,803 DEBUG TRAIN Batch 12/3400 loss 35.296234 loss_att 22.984020 loss_ctc 64.024734 th_accuracy 0.935205 lr 0.00030475 grad_norm 74.315903 rank 0
+2024-02-07 03:08:59,726 DEBUG TRAIN Batch 12/3600 loss 41.180161 loss_att 25.712307 loss_ctc 77.271820 th_accuracy 0.908876 lr 0.00030600 grad_norm 66.685234 rank 0
+2024-02-07 03:09:52,788 DEBUG CV Batch 12/200 loss 248.822113 loss_att 200.570282 loss_ctc 361.409729 th_accuracy 0.570394 
+2024-02-07 03:09:53,279 INFO Epoch 12 CV info lr 0.000307125 cv_loss 141.90273501629792 rank 0 acc 0.6224321507423827
+2024-02-07 03:09:53,280 INFO Checkpoint: save to checkpoint /idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1/epoch_12.pt
+2024-02-07 03:09:54,480 INFO Epoch 13 TRAIN info lr 0.000307125 rank 0
+2024-02-07 03:09:54,498 INFO using accumulate grad, new batch size is 4 times larger than before
+2024-02-07 03:10:57,974 DEBUG TRAIN Batch 13/200 loss 30.114746 loss_att 22.942856 loss_ctc 46.849152 th_accuracy 0.942342 lr 0.00030838 grad_norm 66.876610 rank 0
+2024-02-07 03:11:34,988 DEBUG TRAIN Batch 13/400 loss 32.316364 loss_att 24.951321 loss_ctc 49.501472 th_accuracy 0.916667 lr 0.00030962 grad_norm 72.297615 rank 0
+2024-02-07 03:12:13,772 DEBUG TRAIN Batch 13/600 loss 33.343655 loss_att 17.590723 loss_ctc 70.100494 th_accuracy 0.937729 lr 0.00031087 grad_norm 64.177650 rank 0
+2024-02-07 03:12:53,183 DEBUG TRAIN Batch 13/800 loss 18.949461 loss_att 11.540339 loss_ctc 36.237411 th_accuracy 0.942056 lr 0.00031212 grad_norm 50.815590 rank 0
+2024-02-07 03:13:34,253 DEBUG TRAIN Batch 13/1000 loss 25.065620 loss_att 20.739319 loss_ctc 35.160324 th_accuracy 0.955364 lr 0.00031337 grad_norm 85.966721 rank 0
+2024-02-07 03:14:10,014 DEBUG TRAIN Batch 13/1200 loss 37.721611 loss_att 25.989071 loss_ctc 65.097534 th_accuracy 0.937883 lr 0.00031462 grad_norm 81.373047 rank 0
+2024-02-07 03:14:47,910 DEBUG TRAIN Batch 13/1400 loss 30.693016 loss_att 23.141685 loss_ctc 48.312790 th_accuracy 0.930208 lr 0.00031587 grad_norm 64.643585 rank 0
+2024-02-07 03:15:26,755 DEBUG TRAIN Batch 13/1600 loss 19.931885 loss_att 15.365258 loss_ctc 30.587345 th_accuracy 0.935766 lr 0.00031712 grad_norm 66.360802 rank 0
+2024-02-07 03:16:07,410 DEBUG TRAIN Batch 13/1800 loss 20.756493 loss_att 15.583454 loss_ctc 32.826920 th_accuracy 0.924324 lr 0.00031837 grad_norm 67.005638 rank 0
+2024-02-07 03:16:47,239 DEBUG TRAIN Batch 13/2000 loss 46.545116 loss_att 38.308701 loss_ctc 65.763420 th_accuracy 0.912195 lr 0.00031962 grad_norm 87.129448 rank 0
+2024-02-07 03:17:22,653 DEBUG TRAIN Batch 13/2200 loss 28.463686 loss_att 18.940439 loss_ctc 50.684593 th_accuracy 0.953094 lr 0.00032087 grad_norm 78.192848 rank 0
+2024-02-07 03:18:00,875 DEBUG TRAIN Batch 13/2400 loss 23.239109 loss_att 15.560857 loss_ctc 41.155029 th_accuracy 0.953434 lr 0.00032212 grad_norm 65.493111 rank 0
+2024-02-07 03:18:39,472 DEBUG TRAIN Batch 13/2600 loss 32.235172 loss_att 19.191940 loss_ctc 62.669384 th_accuracy 0.929596 lr 0.00032337 grad_norm 69.953026 rank 0
+2024-02-07 03:19:18,671 DEBUG TRAIN Batch 13/2800 loss 23.553905 loss_att 16.581203 loss_ctc 39.823540 th_accuracy 0.914815 lr 0.00032462 grad_norm 65.293709 rank 0
+4 4
+start stage 4
+here
+conf/train_conformer.yaml
+data/chime4/train_wsj1/data.list
+data/chime4/dev_wsj1/data.list
+/idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1
+data/chime4/dict_char.txt
+/idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1/global_cmvn
+/idiap/temp/lcoppieters/tmp_chime4/exp/1c_wsj1/train.log
+4 4
+start stage 4
+conf/train_conformer.yaml
+data/chime4/train/data.list
+data/chime4/dev/data.list
+/idiap/temp/lcoppieters/tmp_chime4/exp/ch1_and_wsj0
+data/chime4/dict_char.txt
+/idiap/temp/lcoppieters/tmp_chime4/exp/ch1_and_wsj0/global_cmvn
+/idiap/temp/lcoppieters/tmp_chime4/exp/ch1_and_wsj0/train.log
+end stage 4

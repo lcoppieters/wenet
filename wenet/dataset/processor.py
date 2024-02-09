@@ -622,6 +622,7 @@ def padding(data):
         Returns:
             Iterable[Tuple(keys, feats, labels, feats lengths, label lengths)]
     """
+
     for sample in data:
         assert isinstance(sample, list)
         feats_length = torch.tensor([x['feat'].size(0) for x in sample],
