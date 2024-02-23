@@ -56,7 +56,8 @@ def get_args():
                         type=float,
                         default=0.0,
                         help='blank penalty')
-    parser.add_argument('--result_dir', required=True, help='asr result file')
+    parser.add_argument('--result_dir', required=True, help='asr result dir if no result_file')
+    parser.add_argument('--result_file', required=False, help='asr result file')
     parser.add_argument('--batch_size',
                         type=int,
                         default=16,
@@ -232,12 +233,14 @@ def main():
     # TODO(Kaixun Huang): Support context graph
     # files = {}
 
- 
     for mode in args.modes:
-        dir_name = os.path.join(args.result_dir, mode)
-        os.makedirs(dir_name, exist_ok=True)
-        file_name = os.path.join(dir_name, 'text')
-        # files[mode] = open(file_name, 'w')
+        if args.result_file:
+            file_name = args.result_file
+        else:
+            dir_name = os.path.join(args.result_dir, mode)
+            os.makedirs(dir_name, exist_ok=True)
+            file_name = os.path.join(dir_name, 'text')
+    
     max_format_len = max([len(mode) for mode in args.modes])
     with open(file_name, 'w') as file:
         with torch.no_grad():

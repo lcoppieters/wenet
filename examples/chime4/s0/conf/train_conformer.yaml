@@ -28,6 +28,11 @@ decoder_conf:
     self_attention_dropout_rate: 0.0
     src_attention_dropout_rate: 0.0
 
+cmvn: global_cmvn
+cmvn_conf:
+  cmvn_file: 'data/chime4/train/global_cmvn'
+  is_json_cmvn: true
+
 # hybrid CTC/attention
 model_conf:
     ctc_weight: 0.3

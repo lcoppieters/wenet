@@ -1,0 +1,3 @@
+4 4
+start stage 4
+/idiap/temp/lcoppieters/tmp_chime4/exp/large_dataset_cmvn/train.log

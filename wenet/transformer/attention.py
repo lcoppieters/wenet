@@ -283,7 +283,7 @@ class RelPositionMultiHeadedAttention(MultiHeadedAttention):
         #       or cache(1, head, real_cache_t, d_k * 2) (16/4 mode).
         #       In all modes, `if cache.size(0) > 0` will alwayse be `True`
         #       and we will always do splitting and
-        #       concatnation(this will simplify onnx export). Note that
+        #       concatenation(this will simplify onnx export). Note that
         #       it's OK to concat & split zero-shaped tensors(see code below).
         #   when export jit  model, for 1st chunk, we always feed
         #       cache(0, 0, 0, 0) since jit supports dynamic if-branch.

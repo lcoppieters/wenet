@@ -1,0 +1,9 @@
+4 4
+start stage 4
+conf/train_e-branchformer.yaml
+data/chime4/train/data.list
+data/chime4/dev/data.list
+/idiap/temp/lcoppieters/tmp_chime4/exp/ch1_and_wsj0_e-branchformer
+data/chime4/dict_char.txt
+/idiap/temp/lcoppieters/tmp_chime4/exp/ch1_and_wsj0_e-branchformer/global_cmvn
+/idiap/temp/lcoppieters/tmp_chime4/exp/ch1_and_wsj0_e-branchformer/train.log

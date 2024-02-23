@@ -76,8 +76,11 @@ def main():
         configs['tokenizer_conf']={}
         configs['tokenizer_conf']['symbol_table_path'] = args.symbol_table
         configs['tokenizer_conf']['non_lang_syms_path'] = None
-        
-    
+
+    if args.cmvn is not None:
+        configs['cmvn_conf'] = {}
+        configs['cmvn_conf']['cmvn_file'] = args.cmvn
+        configs['cmvn_conf']['is_json_cmvn'] = True
     # init tokenizer
     tokenizer = init_tokenizer(configs)
 

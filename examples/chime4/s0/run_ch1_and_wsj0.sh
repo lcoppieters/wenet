@@ -15,8 +15,8 @@ dump_wav_dir=/idiap/temp/lcoppieters/tmp_chime4/wav_wsj0
 
 data_dir=data/chime4
 dict=$data_dir/dict_char.txt
-train_config=conf/train_conformer.yaml
-exp_dir=/idiap/temp/lcoppieters/tmp_chime4/exp/ch1_and_wsj0
+train_config=conf/train_e-branchformer.yaml
+exp_dir=/idiap/temp/lcoppieters/tmp_chime4/exp/ch1_and_wsj0_e-branchformer
 decode_modes="ctc_prefix_beam_search attention_rescoring"
 average_checkpoint=true
 average_num=10
@@ -103,16 +103,16 @@ if [ $end -ge 4 ] && [ $beg -le 4 ]; then
   echo end stage 4
 fi
 
-suffix="isolated_1ch_track"
+suffix="isolated_CH1"
 if [ $end -ge 5 ] && [ $beg -le 5 ]; then
   if [ ${average_checkpoint} == true ]; then
     decode_checkpoint=$exp_dir/avg_${average_num}.pt
-  #   echo "do model average and final checkpoint is $decode_checkpoint"
-  #   python wenet/bin/average_model.py \
-  #     --dst_model $decode_checkpoint \
-  #     --src_path $exp_dir  \
-  #     --num ${average_num} \
-  #     --val_best
+    echo "do model average and final checkpoint is $decode_checkpoint"
+    python wenet/bin/average_model.py \
+      --dst_model $decode_checkpoint \
+      --src_path $exp_dir  \
+      --num ${average_num} \
+      --val_best
   fi
   nj=4
   ctc_weight=0.5
@@ -126,21 +126,22 @@ if [ $end -ge 5 ] && [ $beg -le 5 ]; then
   for mode in ${decode_modes}; do
     echo mode: $mode
     # for x in dt05_{simu,real} et05_{simu,real}; do
-    for x in dt05_simu; do
+    for x in et05_{simu,real}; do
       # subdir=${x}_${suffix}
-      subdir=test
+      subdir=${x}_${suffix}
       dec_dir=$exp_dir/${subdir}_${mode} && mkdir -p $dec_dir
       echo $dec_dir/text
-      # python3 wenet/bin/recognize.py \
-      #   --gpu 0 \
-      #   --mode $mode \
-      #   --config $exp_dir/train.yaml \
-      #   --test_data $data_dir/$subdir/data.list \
-      #   --checkpoint $decode_checkpoint \
-      #   --beam_size 8 \
-      #   --batch_size 1 \
-      #   --result_dir $exp_dir \
-      #   --ctc_weight $ctc_weight #ß > $dec_dir/text
+      python3 wenet/bin/recognize.py \
+        --gpu 0 \
+        --mode $mode \
+        --config $exp_dir/train.yaml \
+        --test_data $data_dir/$subdir/data.list \
+        --checkpoint $decode_checkpoint \
+        --beam_size 8 \
+        --batch_size 1 \
+        --result_dir $exp_dir \
+        --result_file $dec_dir/text \
+        --ctc_weight $ctc_weight # > $dec_dir/text
         
         # $exp_dir/final_2.pt \
         # --result_file $dec_dir/text \
@@ -153,16 +154,15 @@ if [ $end -ge 5 ] && [ $beg -le 5 ]; then
 
   for mode in ${decode_modes}; do
     # for x in dt05_{simu,real} et05_{simu,real}; do
-    for x in dt05_simu; do
-     subdir=${x}_${suffix}
-     subdir=test
-     dec_dir=$exp_dir/${mode}
-     echo $data_dir/$subdir/text
-     echo $dec_dir/text
-     echo $dec_dir/wer
-     sed -i 's:<unk>: :g' $dec_dir/text
-     python3 tools/compute-wer.py --char=1 --v=1 \
-       $data_dir/$subdir/text $dec_dir/text  > $dec_dir/wer
+    for x in et05_{simu,real}; do
+      subdir=${x}_${suffix}
+      dec_dir=$exp_dir/${subdir}_${mode}
+      echo $data_dir/$subdir/text
+      echo $dec_dir/text
+      echo $dec_dir/wer
+      sed -i 's:<unk>: :g' $dec_dir/text
+      python3 tools/compute-wer.py --char=1 --v=1 \
+        $data_dir/$subdir/text $dec_dir/text  > $dec_dir/wer
     done
   done
 fi

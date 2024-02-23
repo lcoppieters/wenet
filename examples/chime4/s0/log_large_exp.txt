@@ -1,0 +1,21 @@
+4 4
+start stage 4
+here
+conf/train_conformer.yaml
+data/chime4/train/data.list
+data/chime4/dev/data.list
+/idiap/temp/lcoppieters/tmp_chime4/exp/large_dataset
+data/chime4/dict_char.txt
+/idiap/temp/lcoppieters/tmp_chime4/exp/large_dataset/global_cmvn
+/idiap/temp/lcoppieters/tmp_chime4/exp/large_dataset/train.log
+4 4
+start stage 4
+here
+conf/train_conformer.yaml
+data/chime4/train/data.list
+data/chime4/dev/data.list
+/idiap/temp/lcoppieters/tmp_chime4/exp/large_dataset
+data/chime4/dict_char.txt
+/idiap/temp/lcoppieters/tmp_chime4/exp/large_dataset/global_cmvn
+/idiap/temp/lcoppieters/tmp_chime4/exp/large_dataset/train.log
+end stage 4

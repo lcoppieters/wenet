@@ -58,6 +58,7 @@ If one of those files is empty, something went wrong and since the original wav-
 * stage 4: 
 The variables  `--symbol_table $dict` and `--cmvn $exp_dir/global_cmvn` are not available in `wenet/bin/train.py` but the dictionary is needed for the computations
 
+Fix the symbol_table issue:
 To solve this issue, you can add in wenet/bin/train.py in def args():
     ```parser.add_argument('--symbol_table', help='path to dict')```
     ```parser.add_argument('--cmvn', help='path to cmvn')```
@@ -68,7 +69,14 @@ Then in main():
         configs['tokenizer_conf']['symbol_table_path'] = args.symbol_table
         configs['tokenizer_conf']['non_lang_syms_path'] = None```
 
-TODO: fix the cmvn computation
+Fix the cmvn computation:
+This is now part of the config file, the thing is that the cmvn can change in function of the subset of data, therefore, I decided to add a cmvn argument, if it is present, the cmvn computation is added to the config.
+
+Then in main():
+``` if args.cmvn is not None:
+        configs['cmvn_conf'] = {}
+        configs['cmvn_conf']['cmvn_file'] = args.cmvn
+        configs['cmvn_conf']['is_json_cmvn'] = True```
 
 * stage 5:
     in the arguments of `wenet/bin/recognize.py` remove  `--result_file` and `--dict`

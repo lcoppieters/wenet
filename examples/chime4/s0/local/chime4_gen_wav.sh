@@ -26,6 +26,11 @@ echo done raw_wav.scp
 find $dump_dir -name "*.wav" | awk -F '/' '{printf("%s %s\n", $NF, $0)}' | \
   sed 's:\.wav::' > $data_dir/sph_wav.scp
 
+# if you subdivide in several dumpdirectories:
+# find "$dumpdir1" -name "*.wav" | awk -F '/' '{printf("%s %s\n", $NF, $0)}' | sed 's:\.wav::' | sort > "$data_dir/sph_wav_dir1_sorted.scp"
+# find "$dumpdir2" -name "*.wav" | awk -F '/' '{printf("%s %s\n", $NF, $0)}' | sed 's:\.wav::' | sort > "$data_dir/sph_wav_dir2_sorted.scp"
+# cat $data_dir/sph_wav_dir1_sorted.scp $data_dir/sph_wav_dir2_sorted.scp > $data_dir/sph_wav.scp
+
 cat $data_dir/{raw_wav,sph_wav}.scp | sort -k1 > $data_dir/wav.scp
 num_utts=$(cat $data_dir/wav.scp | wc -l)
 echo "Wave utterances (.wav): $num_utts"
