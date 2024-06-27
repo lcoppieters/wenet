@@ -69,6 +69,7 @@ class MultiHeadedAttention(nn.Module):
 
         """
         n_batch = query.size(0)
+
         q = self.linear_q(query).view(n_batch, -1, self.h, self.d_k)
         k = self.linear_k(key).view(n_batch, -1, self.h, self.d_k)
         v = self.linear_v(value).view(n_batch, -1, self.h, self.d_k)

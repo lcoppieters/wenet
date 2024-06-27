@@ -18,17 +18,119 @@ import argparse
 import copy
 import logging
 import os
+# import random
 
 import torch
 import yaml
 from torch.utils.data import DataLoader
 
-from wenet.dataset.dataset import Dataset
+# from wenet.dataset.dataset import Dataset
 from wenet.utils.config import override_config
-from wenet.utils.init_model import init_model
+# from wenet.utils.init_model import init_model
 from wenet.utils.init_tokenizer import init_tokenizer
 from wenet.utils.context_graph import ContextGraph
-from wenet.utils.ctc_utils import get_blank_id
+# from wenet.utils.ctc_utils import get_blank_id
+# from wenet.bin.train_router import Dataset_pretrain_router, init_dataset_and_dataloader
+from wenet.dataset.dataset import Processor, DataList
+import wenet.dataset.processor as processor
+from wenet.utils.file_utils import read_lists
+
+from wenet.transformer.router import TrainRouterNN
+# import torch
+# import torchaudio
+from wenet.text.base_tokenizer import BaseTokenizer
+
+
+def Dataset_pretrain_router(data_type,
+                            data_list_file,
+                            tokenizer: BaseTokenizer,
+                            conf,
+                            partition=True,
+                            percentage=1):
+    """ Construct dataset from arguments
+
+        We have two shuffle stage in the Dataset. The first is global
+        shuffle at shards tar/raw file level. The second is global shuffle
+        at training samples level.
+
+        Args:
+            data_type(str): raw/shard
+            tokenizer (BaseTokenizer): tokenizer to tokenize
+            partition(bool): whether to do data partition in terms of rank
+    """
+    assert data_type in ['raw', 'shard']
+    lists = read_lists(data_list_file)
+
+    n_files = int(len(lists) * percentage)
+    # lists = random.choices(lists, k=n_files)
+    shuffle = conf.get('shuffle', True)
+
+    dataset = DataList(lists, shuffle=shuffle, partition=partition)
+    for idx, batch in enumerate(dataset):
+        print('batch: ', batch)
+        break
+    if data_type == 'shard':
+        dataset = Processor(dataset, processor.url_opener)
+        dataset = Processor(dataset, processor.tar_file_and_group)
+    else:
+        dataset = Processor(dataset, processor.parse_raw)
+
+    speaker_conf = conf.get('speaker_conf', None)
+    if speaker_conf is not None:
+        dataset = Processor(dataset, processor.parse_speaker, **speaker_conf)
+
+    dataset = Processor(dataset, processor.tokenize_router, tokenizer)
+    filter_conf = conf.get('filter_conf', {})
+    dataset = Processor(dataset, processor.filter, **filter_conf)
+
+    resample_conf = conf.get('resample_conf', {})
+    dataset = Processor(dataset, processor.resample, **resample_conf)
+
+    speed_perturb = conf.get('speed_perturb', False)
+    if speed_perturb:
+        dataset = Processor(dataset, processor.speed_perturb)
+
+    feats_type = conf.get('feats_type', 'fbank')
+    assert feats_type in ['fbank', 'mfcc', 'log_mel_spectrogram']
+    if feats_type == 'fbank':
+        fbank_conf = conf.get('fbank_conf', {})
+        dataset = Processor(dataset, processor.compute_fbank, **fbank_conf)
+    elif feats_type == 'mfcc':
+        mfcc_conf = conf.get('mfcc_conf', {})
+        dataset = Processor(dataset, processor.compute_mfcc, **mfcc_conf)
+    elif feats_type == 'log_mel_spectrogram':
+        log_mel_spectrogram_conf = conf.get('log_mel_spectrogram_conf', {})
+        dataset = Processor(dataset, processor.compute_log_mel_spectrogram,
+                            **log_mel_spectrogram_conf)
+
+    spec_aug = conf.get('spec_aug', True)
+    spec_sub = conf.get('spec_sub', False)
+    spec_trim = conf.get('spec_trim', False)
+    if spec_aug:
+        spec_aug_conf = conf.get('spec_aug_conf', {})
+        dataset = Processor(dataset, processor.spec_aug, **spec_aug_conf)
+    if spec_sub:
+        spec_sub_conf = conf.get('spec_sub_conf', {})
+        dataset = Processor(dataset, processor.spec_sub, **spec_sub_conf)
+    if spec_trim:
+        spec_trim_conf = conf.get('spec_trim_conf', {})
+        dataset = Processor(dataset, processor.spec_trim, **spec_trim_conf)
+
+    if shuffle:
+        shuffle_conf = conf.get('shuffle_conf', {})
+        dataset = Processor(dataset, processor.shuffle, **shuffle_conf)
+
+    sort = conf.get('sort', True)
+    if sort:
+        sort_conf = conf.get('sort_conf', {})
+        dataset = Processor(dataset, processor.sort, **sort_conf)
+
+    batch_conf = conf.get('batch_conf', {})
+    dataset = Processor(dataset, processor.batch, **batch_conf)
+
+    dataset = Processor(dataset, processor.padding)
+
+    return dataset
 
 
 def get_args():
@@ -195,7 +297,7 @@ def main():
     test_conf['spec_aug'] = False
     test_conf['spec_sub'] = False
     test_conf['spec_trim'] = False
-    test_conf['shuffle'] = False
+    test_conf['shuffle'] = True
     test_conf['sort'] = False
     if 'fbank_conf' in test_conf:
         test_conf['fbank_conf']['dither'] = 0.0
@@ -205,18 +307,19 @@ def main():
     test_conf['batch_conf']['batch_size'] = args.batch_size
 
     tokenizer = init_tokenizer(configs)
-    test_dataset = Dataset(args.data_type,
-                           args.test_data,
-                           tokenizer,
-                           test_conf,
-                           partition=False)
+    test_dataset = Dataset_pretrain_router(args.data_type,
+                                           args.test_data,
+                                           tokenizer,
+                                           test_conf,
+                                           partition=False,
+                                           percentage=0.02)
 
     test_data_loader = DataLoader(test_dataset, batch_size=None, num_workers=0)
 
     # Init asr model from configs
     args.jit = False
-    model, configs = init_model(args, configs)
-
+    # model, configs = init_model(args, configs)
+    model = TrainRouterNN(configs)
     use_cuda = args.gpu >= 0 and torch.cuda.is_available()
     device = torch.device('cuda' if use_cuda else 'cpu')
     model = model.to(device)
@@ -229,57 +332,51 @@ def main():
                                      configs['tokenizer_conf']['bpe_path'],
                                      args.context_graph_score)
 
-    _, blank_id = get_blank_id(configs, tokenizer.symbol_table)
-    logging.info("blank_id is {}".format(blank_id))
+    # _, blank_id = get_blank_id(configs, tokenizer.symbol_table)
+    # logging.info("blank_id is {}".format(blank_id))
 
     # TODO(Dinghao Zhou): Support RNN-T related decoding
     # TODO(Lv Xiang): Support k2 related decoding
     # TODO(Kaixun Huang): Support context graph
     # files = {}
 
-    for mode in args.modes:
-        if args.result_file:
-            file_name = args.result_file
-        else:
-            dir_name = os.path.join(args.result_dir, mode)
-            os.makedirs(dir_name, exist_ok=True)
-            file_name = os.path.join(dir_name, 'text')
+    if args.result_file:
+        file_name = args.result_file
+    else:
+        dir_name = args.result_dir
+        os.makedirs(dir_name, exist_ok=True)
+        file_name = os.path.join(dir_name, 'text')
 
-    max_format_len = max([len(mode) for mode in args.modes])
     with open(file_name, 'w') as file:
         with torch.no_grad():
 
             for batch_idx, batch in enumerate(test_data_loader):
                 keys = batch["keys"]
-                feats = batch["feats"].to(device)
+                feats = batch["feats"].to(device).squeeze()
                 target = batch["target"].to(device)
                 feats_lengths = batch["feats_lengths"].to(device)
                 target_lengths = batch["target_lengths"].to(device)
                 domain = batch['domain'] if 'domain' in batch.keys() else None
+                # results = model.decode(
+                #     args.modes,
+                #     feats,
+                #     feats_lengths,
+                #     domain,
+                #     args.beam_size,
+                #     decoding_chunk_size=args.decoding_chunk_size,
+                #     num_decoding_left_chunks=args.num_decoding_left_chunks,
+                #     ctc_weight=args.ctc_weight,
+                #     simulate_streaming=args.simulate_streaming,
+                #     reverse_weight=args.reverse_weight,
+                #     context_graph=context_graph,
+                #     blank_id=blank_id,
+                #     blank_penalty=args.blank_penalty)
+                result = model.decode(batch, device)
 
-                results = model.decode(
-                    args.modes,
-                    feats,
-                    feats_lengths,
-                    domain,
-                    args.beam_size,
-                    decoding_chunk_size=args.decoding_chunk_size,
-                    num_decoding_left_chunks=args.num_decoding_left_chunks,
-                    ctc_weight=args.ctc_weight,
-                    simulate_streaming=args.simulate_streaming,
-                    reverse_weight=args.reverse_weight,
-                    context_graph=context_graph,
-                    blank_id=blank_id,
-                    blank_penalty=args.blank_penalty)
-
-                for i, key in enumerate(keys):
-                    for mode, hyps in results.items():
-                        tokens = hyps[i].tokens
-                        line = '{} {}'.format(key,
-                                              tokenizer.detokenize(tokens)[0])
-                        logging.info('{} {}'.format(mode.ljust(max_format_len),
-                                                    line))
-                        file.write(line + '\n')
+                line = ' '.join(
+                    (keys[0], str(batch['domain'].item()), str(result)))
+                logging.info(line)
+                file.write(line + '\n')
 
         file.close()
     # for mode, f in files.items():

@@ -410,6 +410,24 @@ def tokenize(data, tokenizer: BaseTokenizer):
         yield sample
 
 
+def tokenize_router(data, tokenizer: BaseTokenizer):
+    """ Decode text to chars or BPE
+        Inplace operation
+
+        Args:
+            data: Iterable[{key, wav, txt, domain, sample_rate}]
+
+        Returns:
+            Iterable[{key, wav, txt, tokens, label, sample_rate}]
+    """
+    for sample in data:
+        assert 'domain' in sample
+        tokens, label = tokenizer.tokenize(sample['domain'])
+        sample['tokens'] = tokens
+        sample['label'] = label
+        yield sample
+
+
 def spec_aug(data, num_t_mask=2, num_f_mask=2, max_t=50, max_f=10, max_w=80):
     """ Do spec augmentation
         Inplace operation
@@ -613,6 +631,31 @@ def batch(data, batch_type='static', batch_size=16, max_frames_in_batch=12000):
         logging.fatal('Unsupported batch type {}'.format(batch_type))
 
 
+def pad_circular_sequence(sorted_feats, batch_first=True, padding=0):
+    if type(padding) is (int or float):
+        return pad_sequence(sorted_feats,
+                            batch_first=batch_first,
+                            padding_value=padding)
+    elif padding == 'circular':
+
+        T = sorted_feats[0].size(0)
+        sorted_feats_out = torch.empty([
+            len(sorted_feats), sorted_feats[0].size(0), sorted_feats[0].size(1)
+        ])
+
+        for i, utt in enumerate(sorted_feats):
+            pad_length = T - utt.size(0)
+
+            while pad_length > T / 2:
+                utt = torch.nn.functional.pad(utt.T, (0, utt.size(0)),
+                                              'circular').T
+                pad_length = T - utt.size(0)
+
+            sorted_feats_out[i] = torch.nn.functional.pad(
+                utt.T, (0, pad_length), 'circular').T
+        return sorted_feats_out
+
+
 def padding(data):
     """ Padding the data into training data
 
@@ -622,7 +665,6 @@ def padding(data):
         Returns:
             Iterable[Tuple(keys, feats, labels, feats lengths, label lengths)]
     """
-
     for sample in data:
         assert isinstance(sample, list)
         feats_length = torch.tensor([x['feat'].size(0) for x in sample],
@@ -640,16 +682,20 @@ def padding(data):
                                      dtype=torch.int32)
         wav_lengths = torch.tensor([x.size(0) for x in sorted_wavs],
                                    dtype=torch.int32)
-
-        padded_feats = pad_sequence(sorted_feats,
-                                    batch_first=True,
-                                    padding_value=0)
+        padded_feats = pad_circular_sequence(sorted_feats,
+                                             batch_first=True,
+                                             padding='circular')
+        # padded_feats = pad_sequence(sorted_feats,
+        #                             batch_first=True,
+        #                             padding_value=0)
         padding_labels = pad_sequence(sorted_labels,
                                       batch_first=True,
                                       padding_value=-1)
         padded_wavs = pad_sequence(sorted_wavs,
                                    batch_first=True,
                                    padding_value=0)
+
+        # padded_feats = padded_feats[:, 0:20, :]
         batch = {
             "keys": sorted_keys,
             "feats": padded_feats,
@@ -663,4 +709,8 @@ def padding(data):
             speaker = torch.tensor([sample[i]['speaker'] for i in order],
                                    dtype=torch.int32)
             batch['speaker'] = speaker
+        if 'domain' in sample[0]:
+            domain = torch.tensor([sample[i]['domain'] for i in order],
+                                  dtype=torch.int32)
+            batch['domain'] = domain
         yield batch

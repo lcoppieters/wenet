@@ -47,6 +47,7 @@ def main():
     else:
         h = open(args.input, "r", encoding="utf-8")
     for line in h:
+        print('in spm_decode')
         print(decode(line.split()))
 
 

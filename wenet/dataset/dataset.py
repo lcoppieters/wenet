@@ -138,8 +138,13 @@ def Dataset(data_type,
     """
     assert data_type in ['raw', 'shard']
     lists = read_lists(data_list_file)
+
     shuffle = conf.get('shuffle', True)
+
     dataset = DataList(lists, shuffle=shuffle, partition=partition)
+    for idx, batch in enumerate(dataset):
+        print(batch)
+        break
     if data_type == 'shard':
         dataset = Processor(dataset, processor.url_opener)
         dataset = Processor(dataset, processor.tar_file_and_group)
@@ -198,5 +203,7 @@ def Dataset(data_type,
 
     batch_conf = conf.get('batch_conf', {})
     dataset = Processor(dataset, processor.batch, **batch_conf)
+
     dataset = Processor(dataset, processor.padding)
+
     return dataset

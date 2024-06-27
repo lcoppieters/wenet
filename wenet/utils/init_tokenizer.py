@@ -20,21 +20,23 @@ from wenet.text.bpe_tokenizer import BpeTokenizer
 from wenet.text.char_tokenizer import CharTokenizer
 from wenet.text.paraformer_tokenizer import ParaformerTokenizer
 from wenet.text.whisper_tokenizer import WhisperTokenizer
+from wenet.text.router_tokenizer import RouterTokenizer
 
 
 def init_tokenizer(configs) -> BaseTokenizer:
     # TODO(xcsong): Forcefully read the 'tokenizer' attribute.
     tokenizer_type = configs.get("tokenizer", "char")
+
     if tokenizer_type == "whisper":
         tokenizer = WhisperTokenizer(
             multilingual=configs['tokenizer_conf']['is_multilingual'],
             num_languages=configs['tokenizer_conf']['num_languages'])
     elif tokenizer_type == "char":
- 
         tokenizer = CharTokenizer(
             configs['tokenizer_conf']['symbol_table_path'],
             configs['tokenizer_conf']['non_lang_syms_path'],
-            split_with_space=configs['tokenizer_conf'].get('split_with_space', False),
+            split_with_space=configs['tokenizer_conf'].get(
+                'split_with_space', False),
             connect_symbol=configs['tokenizer_conf'].get('connect_symbol', ''))
     elif tokenizer_type == "bpe":
         tokenizer = BpeTokenizer(
@@ -47,6 +49,8 @@ def init_tokenizer(configs) -> BaseTokenizer:
         tokenizer = ParaformerTokenizer(
             symbol_table=configs['tokenizer_conf']['symbol_table_path'],
             seg_dict=configs['tokenizer_conf']['seg_dict_path'])
+    elif tokenizer_type == "router":
+        tokenizer = RouterTokenizer()
     else:
         raise NotImplementedError
     logging.info("use {} tokenizer".format(tokenizer_type))

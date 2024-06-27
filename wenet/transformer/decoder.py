@@ -355,6 +355,7 @@ class BiTransformerDecoder(torch.nn.Module):
                     if use_output_layer is True,
                 olens: (batch, )
         """
+
         l_x, _, olens = self.left_decoder(memory, memory_mask, ys_in_pad,
                                           ys_in_lens)
         r_x = torch.tensor(0.0)

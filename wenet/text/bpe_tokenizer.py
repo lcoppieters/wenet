@@ -17,6 +17,7 @@ class BpeTokenizer(CharTokenizer):
     ) -> None:
         super().__init__(symbol_table, non_lang_syms, split_with_space,
                          connect_symbol, unk)
+
         self._model = bpe_model
         # NOTE(Mddct): multiprocessing.Process() issues
         #              don't build sp here

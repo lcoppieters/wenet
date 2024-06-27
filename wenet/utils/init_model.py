@@ -25,7 +25,7 @@ from wenet.transducer.transducer import Transducer
 from wenet.transformer.asr_model import ASRModel
 from wenet.transformer.cmvn import GlobalCMVN
 from wenet.transformer.ctc import CTC
-from wenet.transformer.encoder import TransformerEncoder, ConformerEncoder
+from wenet.transformer.encoder import TransformerEncoder, ConformerEncoder, ModularConformerEncoder, ModularConformerEncoderWithLearnedRoutingASRPath, ModularConformerEncoderWithLearnedRoutingClassifierPath
 from wenet.transformer.decoder import BiTransformerDecoder, TransformerDecoder
 from wenet.branchformer.encoder import BranchformerEncoder
 from wenet.e_branchformer.encoder import EBranchformerEncoder
@@ -40,6 +40,11 @@ from wenet.utils.checkpoint import load_checkpoint, load_trained_modules
 WENET_ENCODER_CLASSES = {
     "transformer": TransformerEncoder,
     "conformer": ConformerEncoder,
+    "modular_conformer": ModularConformerEncoder,
+    "modular_conformer_with_learned_routing_asr_path":
+    ModularConformerEncoderWithLearnedRoutingASRPath,
+    "modular_conformer_with_learned_routing_classifier_path":
+    ModularConformerEncoderWithLearnedRoutingClassifierPath,
     "squeezeformer": SqueezeformerEncoder,
     "efficientConformer": EfficientConformerEncoder,
     "branchformer": BranchformerEncoder,
@@ -151,6 +156,7 @@ def init_model(args, configs):
                                        {}).get('special_tokens', None),
         )
     else:
+
         model = WENET_MODEL_CLASSES[model_type](
             vocab_size=vocab_size,
             encoder=encoder,

@@ -37,6 +37,7 @@ class Executor:
         '''
         model.train()
         info_dict = copy.deepcopy(configs)
+
         logging.info('using accumulate grad, new batch size is {} times'
                      ' larger than before'.format(info_dict['accum_grad']))
         # A context manager to be used in conjunction with an instance of
@@ -48,7 +49,13 @@ class Executor:
             model_context = nullcontext
 
         with model_context():
+            # import pdb
+            # pdb.set_trace()
+            with open('save_vals.txt', 'a') as f:
+                f.write(' train\n')
             for batch_idx, batch_dict in enumerate(train_data_loader):
+                # import pdb
+                # pdb.set_trace()
                 info_dict["tag"] = "TRAIN"
                 info_dict["step"] = self.step
                 info_dict["batch_idx"] = batch_idx
@@ -71,6 +78,7 @@ class Executor:
                     context = nullcontext
 
                 with context():
+
                     info_dict = batch_forward(model, batch_dict, scaler,
                                               info_dict)
                     info_dict = batch_backward(model, scaler, info_dict)
@@ -105,6 +113,8 @@ class Executor:
         info_dict = copy.deepcopy(configs)
         num_seen_utts, loss_dict, total_acc = 1, {}, []  # avoid division by 0
         with torch.no_grad():
+            with open('save_vals.txt', 'a') as f:
+                f.write('validation\n')
             for batch_idx, batch_dict in enumerate(cv_data_loader):
                 info_dict["tag"] = "CV"
                 info_dict["step"] = self.step

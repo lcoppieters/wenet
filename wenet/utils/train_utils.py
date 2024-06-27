@@ -141,9 +141,16 @@ def add_deepspeed_args(parser):
 
 
 def init_distributed(args):
+    import gc
+    gc.collect()
     world_size = int(os.environ.get('WORLD_SIZE', 1))
     local_rank = int(os.environ.get('LOCAL_RANK', 0))
     rank = int(os.environ.get('RANK', 0))
+
+    os.environ['RANK'] = str(rank)
+    os.environ['WORLD_SIZE'] = str(world_size)
+    os.environ['MASTER_ADDR'] = 'localhost'
+
     logging.info('training on multiple gpus, this gpu {}'.format(local_rank) +
                  ', rank {}, world_size {}'.format(rank, world_size))
     if args.train_engine == "torch_ddp":
@@ -246,6 +253,7 @@ def init_dataset_and_dataloader(args, configs, tokenizer):
     cv_conf['shuffle'] = False
 
     configs['vocab_size'] = tokenizer.vocab_size()
+
     train_dataset = Dataset(args.data_type, args.train_data, tokenizer,
                             train_conf, True)
     cv_dataset = Dataset(args.data_type,
@@ -446,6 +454,8 @@ def wenet_join(group_join, info_dict):
 def batch_forward(model, batch, scaler, info_dict):
     train_engine = info_dict.get('train_engine', "torch_ddp")
     device = int(os.environ.get('LOCAL_RANK', 0))
+    # print('WARNING: remove the following line if you want to go on GPU')
+    # device = 'cpu'
     accum_grad = info_dict.get('accum_grad', 1)
 
     dtype = info_dict.get("dtype", "fp32")
@@ -458,6 +468,7 @@ def batch_forward(model, batch, scaler, info_dict):
 
     if train_engine == "deepspeed":
         # deepspeed
+
         with torch.cuda.amp.autocast(enabled=dtype is not None,
                                      dtype=dtype,
                                      cache_enabled=False):
@@ -468,6 +479,8 @@ def batch_forward(model, batch, scaler, info_dict):
         # The more details about amp can be found in
         # https://pytorch.org/docs/stable/notes/amp_examples.html
         with torch.cuda.amp.autocast(scaler is not None):
+            # import pdb
+            # pdb.set_trace()
             loss_dict = model(batch, device)
     info_dict['loss_dict'] = loss_dict
 
@@ -495,6 +508,7 @@ def batch_backward(model, scaler, info_dict):
             scaled_loss.backward()
     info_dict['loss_dict']['loss'] = scaled_loss
     for loss_name, loss_value in info_dict['loss_dict'].items():
+
         if loss_value is not None:
             info_dict['loss_dict'][loss_name] = loss_value.item()
 

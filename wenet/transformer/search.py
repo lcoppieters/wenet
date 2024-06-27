@@ -133,6 +133,9 @@ def ctc_prefix_beam_search(
         Returns:
             List[List[List[int]]]: nbest result for each utterance
     """
+
+    # import pdb
+    # pdb.set_trace()
     batch_size = ctc_probs.shape[0]
     results = []
     # CTC prefix beam search can not be paralleled, so search one by one
@@ -148,6 +151,7 @@ def ctc_prefix_beam_search(
                                  else context_graph.root,
                                  context_score=0.0))]
         # 2. CTC beam search step by step
+        # pdb.set_trace()
         for t in range(0, num_t):
             logp = ctc_prob[t]  # (vocab_size,)
             # key: prefix, value: PrefixScore
@@ -156,6 +160,7 @@ def ctc_prefix_beam_search(
             top_k_logp, top_k_index = logp.topk(beam_size)  # (beam_size,)
             for u in top_k_index:
                 u = u.item()
+                # pdb.set_trace()
                 prob = logp[u].item()
                 for prefix, prefix_score in cur_hyps:
                     last = prefix[-1] if len(prefix) > 0 else None
@@ -224,13 +229,14 @@ def ctc_prefix_beam_search(
 
         # We should backoff the context score/state when the context is
         # not fully matched at the last time.
+        # pdb.set_trace()
         if context_graph is not None:
             for i, hyp in enumerate(cur_hyps):
                 context_score, new_context_state = context_graph.finalize(
                     hyp[1].context_state)
                 cur_hyps[i][1].context_score = context_score
                 cur_hyps[i][1].context_state = new_context_state
-
+        # pdb.set_trace()
         nbest = [y[0] for y in cur_hyps]
         nbest_scores = [y[1].total_score() for y in cur_hyps]
         nbest_times = [y[1].times() for y in cur_hyps]

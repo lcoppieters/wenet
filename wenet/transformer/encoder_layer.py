@@ -185,7 +185,7 @@ class ConformerEncoderLayer(nn.Module):
             torch.Tensor: Mask tensor (#batch, time, time).
             torch.Tensor: att_cache tensor,
                 (#batch=1, head, cache_t1 + time, d_k * 2).
-            torch.Tensor: cnn_cahce tensor (#batch, size, cache_t2).
+            torch.Tensor: cnn_cache tensor (#batch, size, cache_t2).
         """
 
         # whether to use macaron style
@@ -234,3 +234,73 @@ class ConformerEncoderLayer(nn.Module):
             x = self.norm_final(x)
 
         return x, mask, new_att_cache, new_cnn_cache
+
+
+class ModularConformerEncoderLayer(nn.Module):
+
+    def __init__(
+        self,
+        size: int,
+        num_conformers_per_block: int,
+        self_attn: torch.nn.Module,
+        feed_forward: Optional[nn.Module] = None,
+        feed_forward_macaron: Optional[nn.Module] = None,
+        conv_module: Optional[nn.Module] = None,
+        dropout_rate: float = 0.1,
+        normalize_before: bool = True,
+    ):
+        super().__init__()
+        # create N conformer blocks
+        self.N = num_conformers_per_block
+        self.function_list = torch.nn.ModuleList([
+            ConformerEncoderLayer(size, self_attn, feed_forward,
+                                  feed_forward_macaron, conv_module,
+                                  dropout_rate, normalize_before)
+            for i in range(self.N)
+        ])
+
+        # Get some variable values
+        self.in_features = self.function_list[
+            0].feed_forward_macaron.w_1.in_features
+        self.H = self.function_list[0].self_attn.h
+
+    def forward(
+        self,
+        x: torch.Tensor,
+        mask: torch.Tensor,
+        pos_emb: torch.Tensor,
+        router_selection: torch.Tensor,
+        mask_pad: torch.Tensor = torch.ones((0, 0, 0), dtype=torch.bool),
+        att_cache: torch.Tensor = torch.zeros((0, 0, 0, 0)),
+        cnn_cache: torch.Tensor = torch.zeros((0, 0, 0, 0)),
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+
+        device = x.device
+        B, T, O = x.size()
+        router_selection = torch.minimum(
+            router_selection,
+            torch.ones(B, device=device) * (self.N - 1))
+        x_out = torch.zeros(B, T, O, device=device)
+        mask_out = torch.zeros(B, 1, T, dtype=torch.bool, device=device)
+        new_att_cache_out = torch.zeros(B,
+                                        self.H,
+                                        T,
+                                        int(O / self.H * 2),
+                                        device=device)
+        for router_idx, function in enumerate(self.function_list):
+            # selection of path by router : if fixed router, we need to pass a file as argument
+            indices = (router_selection == router_idx)
+            if len(indices[indices is True]) != 0:
+                # pass through selected conformer
+                x_out_part, mask_out_part, new_att_cache_out_part, new_cnn_cache_out = function(
+                    x[indices], mask[indices], pos_emb, mask_pad[indices],
+                    att_cache, cnn_cache)
+
+                # aggregation of different outputs
+                x_out[indices] = x_out_part
+                mask_out[indices] = mask_out_part
+                new_att_cache_out[indices] = new_att_cache_out_part
+
+        conformer_out = x_out, mask_out, new_att_cache_out, new_cnn_cache_out
+
+        return conformer_out

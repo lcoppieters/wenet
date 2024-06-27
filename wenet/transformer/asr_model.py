@@ -30,25 +30,25 @@ from wenet.utils.mask import make_pad_mask
 from wenet.utils.common import (IGNORE_ID, add_sos_eos, th_accuracy,
                                 reverse_pad_list)
 from wenet.utils.context_graph import ContextGraph
+from wenet.transformer.router import RouterNN
 
 
 class ASRModel(torch.nn.Module):
     """CTC-attention hybrid Encoder-Decoder model"""
 
-    def __init__(
-        self,
-        vocab_size: int,
-        encoder: BaseEncoder,
-        decoder: TransformerDecoder,
-        ctc: CTC,
-        ctc_weight: float = 0.5,
-        ignore_id: int = IGNORE_ID,
-        reverse_weight: float = 0.0,
-        lsm_weight: float = 0.0,
-        length_normalized_loss: bool = False,
-        special_tokens: Optional[dict] = None,
-        apply_non_blank_embedding: bool = False,
-    ):
+    def __init__(self,
+                 vocab_size: int,
+                 encoder: BaseEncoder,
+                 decoder: TransformerDecoder,
+                 ctc: CTC,
+                 ctc_weight: float = 0.5,
+                 ignore_id: int = IGNORE_ID,
+                 reverse_weight: float = 0.0,
+                 lsm_weight: float = 0.0,
+                 length_normalized_loss: bool = False,
+                 special_tokens: Optional[dict] = None,
+                 apply_non_blank_embedding: bool = False,
+                 use_learned_routing: bool = False):
         assert 0.0 <= ctc_weight <= 1.0, ctc_weight
 
         super().__init__()
@@ -73,6 +73,19 @@ class ASRModel(torch.nn.Module):
             smoothing=lsm_weight,
             normalize_length=length_normalized_loss,
         )
+        self.use_learned_routing = use_learned_routing
+        if use_learned_routing:
+
+            self.router = RouterNN(self.encoder.embed.idim,
+                                   self.encoder.encoders[0].N)
+            path = '/idiap/temp/lcoppieters/tmp_chime4/exp/pretrain_router_3_conv_blocs_2_experts/epoch_19.pt'
+            m = torch.load(path)
+            import pdb
+            for key in list(m.keys()):
+                m[key.replace('router.', '')] = m.pop(key)
+            pdb.set_trace()
+
+            self.router.load_state_dict(m)
 
     @torch.jit.ignore(drop=True)
     def forward(
@@ -81,21 +94,36 @@ class ASRModel(torch.nn.Module):
         device: torch.device,
     ) -> Dict[str, Optional[torch.Tensor]]:
         """Frontend + Encoder + Decoder + Calc loss"""
+
         speech = batch['feats'].to(device)
         speech_lengths = batch['feats_lengths'].to(device)
         text = batch['target'].to(device)
         text_lengths = batch['target_lengths'].to(device)
 
+        if 'domain' in batch.keys():
+            domain = batch['domain'].to(device)
         assert text_lengths.dim() == 1, text_lengths.shape
         # Check that batch_size is unified
         assert (speech.shape[0] == speech_lengths.shape[0] == text.shape[0] ==
                 text_lengths.shape[0]), (speech.shape, speech_lengths.shape,
                                          text.shape, text_lengths.shape)
         # 1. Encoder
-        encoder_out, encoder_mask = self.encoder(speech, speech_lengths)
+        if self.use_learned_routing:
+            router_selection = self.router(speech)
+            router_selection = torch.topk(router_selection, 1)[1].squeeze()
+            encoder_out, encoder_mask = self.encoder(speech, speech_lengths,
+                                                     router_selection)
+        elif 'domain' in batch.keys():
+            encoder_out, encoder_mask = self.encoder(speech, speech_lengths,
+                                                     domain)
+        else:
+            encoder_out, encoder_mask = self.encoder(speech, speech_lengths)
         encoder_out_lens = encoder_mask.squeeze(1).sum(1)
 
+        # import pdb
+        # pdb.set_trace()
         # 2a. CTC branch
+        # pdb.set_trace()
         if self.ctc_weight != 0.0:
             loss_ctc, ctc_probs = self.ctc(encoder_out, encoder_out_lens, text,
                                            text_lengths)
@@ -109,6 +137,8 @@ class ASRModel(torch.nn.Module):
             assert ctc_probs is not None
             encoder_out, encoder_mask = self.filter_blank_embedding(
                 ctc_probs, encoder_out)
+
+        # pdb.set_trace()
         if self.ctc_weight != 1.0:
             loss_att, acc_att = self._calc_att_loss(encoder_out, encoder_mask,
                                                     text, text_lengths)
@@ -123,6 +153,7 @@ class ASRModel(torch.nn.Module):
         else:
             loss = self.ctc_weight * loss_ctc + (1 -
                                                  self.ctc_weight) * loss_att
+
         return {
             "loss": loss,
             "loss_att": loss_att,
@@ -191,6 +222,7 @@ class ASRModel(torch.nn.Module):
         # 2. Compute attention loss
         loss_att = self.criterion_att(decoder_out, ys_out_pad)
         r_loss_att = torch.tensor(0.0)
+
         if self.reverse_weight > 0.0:
             r_loss_att = self.criterion_att(r_decoder_out, r_ys_out_pad)
         loss_att = loss_att * (
@@ -206,12 +238,14 @@ class ASRModel(torch.nn.Module):
         self,
         speech: torch.Tensor,
         speech_lengths: torch.Tensor,
+        domain: None,
         decoding_chunk_size: int = -1,
         num_decoding_left_chunks: int = -1,
         simulate_streaming: bool = False,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         # Let's assume B = batch_size
         # 1. Encoder
+
         if simulate_streaming and decoding_chunk_size > 0:
             encoder_out, encoder_mask = self.encoder.forward_chunk_by_chunk(
                 speech,
@@ -219,12 +253,22 @@ class ASRModel(torch.nn.Module):
                 num_decoding_left_chunks=num_decoding_left_chunks
             )  # (B, maxlen, encoder_dim)
         else:
-            encoder_out, encoder_mask = self.encoder(
-                speech,
-                speech_lengths,
-                decoding_chunk_size=decoding_chunk_size,
-                num_decoding_left_chunks=num_decoding_left_chunks
-            )  # (B, maxlen, encoder_dim)
+            if domain is None:
+
+                encoder_out, encoder_mask = self.encoder(
+                    speech,
+                    speech_lengths,
+                    decoding_chunk_size=decoding_chunk_size,
+                    num_decoding_left_chunks=num_decoding_left_chunks
+                )  # (B, maxlen, encoder_dim)
+            else:
+                encoder_out, encoder_mask = self.encoder(
+                    speech,
+                    speech_lengths,
+                    domain,
+                    decoding_chunk_size=decoding_chunk_size,
+                    num_decoding_left_chunks=num_decoding_left_chunks)
+
         return encoder_out, encoder_mask
 
     @torch.jit.ignore(drop=True)
@@ -246,6 +290,7 @@ class ASRModel(torch.nn.Module):
         methods: List[str],
         speech: torch.Tensor,
         speech_lengths: torch.Tensor,
+        domain: None,
         beam_size: int,
         decoding_chunk_size: int = -1,
         num_decoding_left_chunks: int = -1,
@@ -281,14 +326,25 @@ class ASRModel(torch.nn.Module):
 
         Returns: dict results of all decoding methods
         """
+
+        # import pdb
+        # pdb.set_trace()
         assert speech.shape[0] == speech_lengths.shape[0]
         assert decoding_chunk_size != 0
-        encoder_out, encoder_mask = self._forward_encoder(
-            speech, speech_lengths, decoding_chunk_size,
-            num_decoding_left_chunks, simulate_streaming)
+        # import pdb
+        # pdb.set_trace()
+        if self.use_learned_routing:
+            router_selection = self.router(speech)
+            domain = torch.topk(router_selection, 1)[1].squeeze()
+            print(domain)
+            encoder_out, encoder_mask = self._forward_encoder(
+                speech, speech_lengths, domain, decoding_chunk_size,
+                num_decoding_left_chunks, simulate_streaming)
         encoder_lens = encoder_mask.squeeze(1).sum(1)
         ctc_probs = self.ctc_logprobs(encoder_out, blank_penalty, blank_id)
+
         results = {}
+        # pdb.set_trace()
         if 'attention' in methods:
             results['attention'] = attention_beam_search(
                 self, encoder_out, encoder_mask, beam_size)
@@ -300,6 +356,7 @@ class ASRModel(torch.nn.Module):
                                                        beam_size,
                                                        context_graph, blank_id)
             results['ctc_prefix_beam_search'] = ctc_prefix_result
+
         if 'attention_rescoring' in methods:
             # attention_rescoring depends on ctc_prefix_beam_search nbest
             if 'ctc_prefix_beam_search' in results:
